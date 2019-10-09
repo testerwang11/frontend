@@ -12,9 +12,9 @@
           {{ stepNumber(scope.row, scope.$index + 1) }}
         </template>
       </el-table-column>
-      <el-table-column label="Action" align="center" width="300">
+      <el-table-column label="Action" align="center" width="200">
         <template scope="{ row }">
-          <el-input v-model="row.name" clearable placeholder="步骤名" style="margin-bottom: 5px" />
+          <el-input v-model="row.name" placeholder="步骤名" style="margin-bottom: 5px" type="textarea" :autosize="{ minRows: 1 }" />
           <el-select v-model="row.actionId" filterable clearable style="width: 100%" @change="actionSelected($event, row)" @visible-change="selectAction" placeholder="选择action">
             <el-option v-for="action in selectableActions" :key="action.id" :value="action.id" :label="action.name">
               <span style="float: left;color: blue" v-if="action.type === 1">[基础组件]</span>
@@ -48,7 +48,7 @@
             </el-table-column>
             <el-table-column label="参数值" align="center">
               <template scope="scope_paramValues">
-                <el-input v-model="scope_paramValues.row.paramValue" @paste.native="onpaste($event, scope_paramValues)" clearable />
+                <el-input v-model="scope_paramValues.row.paramValue" @paste.native="onpaste($event, scope_paramValues)" type="textarea" :autosize="{ minRows: 1 }"/>
                 <img v-if="isImg(scope_paramValues.row.paramValue)" :src="scope_paramValues.row.paramValue" />
               </template>
             </el-table-column>
@@ -57,7 +57,7 @@
       </el-table-column>
       <el-table-column label="赋值" align="center" width="200">
         <template scope="{ row }">
-          <el-input v-model="row.evaluation" clearable :disabled="evaluationDisabled(row.actionId)" />
+          <el-input v-model="row.evaluation" :disabled="evaluationDisabled(row.actionId)" type="textarea" :autosize="{ minRows: 1 }" />
         </template>
       </el-table-column>
       <el-table-column label="异常处理" align="center" width="170">
@@ -69,9 +69,10 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="160">
+      <el-table-column label="操作" align="center" width="180">
         <template scope="scope">
           <el-button-group>
+            <el-button size="mini" @click="addNextStep(scope.$index)">+</el-button>
             <el-button size="mini" :disabled="moveUpDisable(scope.$index)" @click="moveUp(scope.$index)">↑</el-button>
             <el-button size="mini" :disabled="moveDownDisable(scope.$index)" @click="moveDown(scope.$index)">↓</el-button>
             <el-button size="mini" class="el-icon-delete" @click="deleteStep(scope.$index)" />
@@ -85,6 +86,10 @@
 <script>
 import { getSelectableActions } from '@/api/action'
 export default {
+  props: {
+    // 当前编辑的actionId
+    curActionId: Number
+  },
   data() {
     return {
       steps: [],
@@ -177,9 +182,10 @@ export default {
     this.fetchSelectableActions()
   },
   methods: {
-    isImg(base64) {
-      if (base64) {
-        return base64.startsWith('data:image/')
+    isImg(value) {
+      if (value) {
+        // 简单粗暴判断是否是base64
+        return value.startsWith('data:image/')
       } else {
         return false
       }
@@ -213,6 +219,9 @@ export default {
     addStep() {
       this.steps.push({ paramValues: [], handleException: null })
     },
+    addNextStep(index) {
+      this.steps.splice(index + 1, 0, { paramValues: [], handleException: null })
+    },
     // 步骤勾选
     handleSelectionChange(val) {
       this.selectedSteps = this.steps.filter(step => val.indexOf(step) !== -1)
@@ -224,7 +233,7 @@ export default {
     },
     fetchSelectableActions() {
       getSelectableActions(this.projectId, this.platform).then(resp => {
-        this.selectableActions = resp.data
+        this.selectableActions = resp.data.filter(action => action.id !== this.curActionId)
       })
     },
     // 选择了一个action或清除
