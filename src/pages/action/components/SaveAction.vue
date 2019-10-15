@@ -55,9 +55,10 @@ import ActionLocalVarList from '../components/ActionLocalVarList'
 import GlobalVarList from '../components/GlobalVarList'
 import ActionStepList from '../components/ActionStepList'
 import Sticky from '@/components/Sticky'
-import { getPageList } from '@/api/page'
 import { getTestSuiteList } from '@/api/testSuite'
 import { addAction, updateAction, getActionList, debugAction } from '@/api/action'
+import { getCategoryList } from '@/api/category'
+
 export default {
   components: {
     MobileInspector,
@@ -87,10 +88,12 @@ export default {
         javaImports: [],
         platform: this.$store.state.project.platform,
         pageId: undefined,
+        categoryId: undefined,
         projectId: this.$store.state.project.id,
         testSuiteId: undefined
       },
       pages: [],
+      categorys: [],
       testSuites: [],
       debugBtnLoading: false,
       // start-传递给AndroidInspctor组件的数据
@@ -107,7 +110,8 @@ export default {
   },
   async created() {
     if (!this.isTestCase) {
-      const { data } = await getPageList({ projectId: this.saveActionForm.projectId })
+      // const { data } = await getPageList({ projectId: this.saveActionForm.projectId })
+      const { data } = await getCategoryList({ projectId: this.saveActionForm.projectId, type: 1 })
       this.pages = data
     } else {
       const { data } = await getTestSuiteList({ projectId: this.saveActionForm.projectId })
@@ -118,7 +122,7 @@ export default {
       const { data } = await getActionList({ id: editActionId })
       this.saveActionForm = data[0]
       if (this.saveActionForm.pageId) { // 编辑时，默认绑定了page，需要初始化布局数据，否则点击右上角眼睛看不到数据
-        this.initPageWindowHierarchyData(this.saveActionForm.pageId)
+        // this.initPageWindowHierarchyData(this.saveActionForm.pageId)
       }
       this.$refs.paramList.params = this.saveActionForm.params
       this.$refs.localVarList.localVars = this.saveActionForm.localVars
