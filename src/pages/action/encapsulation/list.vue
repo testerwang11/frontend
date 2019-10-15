@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button @click="$router.push('/action/encapsulation/add')" style="margin-bottom: 10px">添加Action</el-button>
+    <el-button style="margin-bottom: 10px" @click="$router.push('/action/encapsulation/add')">添加Action</el-button>
     <!--page-->
     <div>
       <el-tabs type="card" @tab-click="onTabClick">
@@ -42,6 +42,8 @@
 
 import { getActionList, deleteAction } from '@/api/action'
 import { getPageList } from '@/api/page'
+import { getCategoryList } from '@/api/category'
+
 import Pagination from '@/components/Pagination'
 
 export default {
@@ -51,6 +53,9 @@ export default {
   data() {
     return {
       pageList: [{
+        name: '全部'
+      }],
+      pageList2: [{
         name: '全部',
         id: undefined
       }],
@@ -71,7 +76,8 @@ export default {
     }
   },
   created() {
-    this.fetchPageList()
+    // this.fetchPageList()
+    this.fetchCategoryList()
     this.fetchActionList()
   },
   methods: {
@@ -96,6 +102,10 @@ export default {
     },
     async fetchPageList() {
       const { data } = await getPageList({ projectId: this.projectId })
+      this.pageList = this.pageList.concat(data)
+    },
+    async fetchCategoryList() {
+      const { data } = await getCategoryList({ projectId: this.projectId, type: 1 })
       this.pageList = this.pageList.concat(data)
     },
     onTabClick(tab) {
