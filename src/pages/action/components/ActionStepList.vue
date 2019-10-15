@@ -30,7 +30,7 @@
       <el-table-column label="Action参数" align="center">
         <template scope="{ row }">
           <el-table :data="row.paramValues" border>
-            <el-table-column label="参数名" align="center" width="200" show-overflow-tooltip>
+            <el-table-column label="参数名" align="center" width="150" show-overflow-tooltip>
               <template scope="scope_paramValues">
                 <el-popover placement="right" trigger="click">
                   {{ paramNameDesc(row.actionId, scope_paramValues.row.paramName) }}
@@ -46,9 +46,14 @@
                 </el-popover>
               </template>
             </el-table-column>
+            <el-table-column label="参数类型" align="center" width="100" show-overflow-tooltip>
+              <template scope="scope_paramValues">
+                {{ scope_paramValues.row.paramType }}
+              </template>
+            </el-table-column>
             <el-table-column label="参数值" align="center">
               <template scope="scope_paramValues">
-                <el-input v-model="scope_paramValues.row.paramValue" @paste.native="onpaste($event, scope_paramValues)" type="textarea" :autosize="{ minRows: 1 }"/>
+                <el-input v-model="scope_paramValues.row.paramValue" @paste.native="onpaste($event, scope_paramValues)" type="textarea" :autosize="{ minRows: 1, maxRows: 10 }"/>
                 <img v-if="isImg(scope_paramValues.row.paramValue)" :src="scope_paramValues.row.paramValue" />
               </template>
             </el-table-column>
@@ -135,21 +140,17 @@ export default {
         } else {
           const action = this.selectableActions.filter(action => action.id === actionId)[0]
           if (action) {
-            return !(action.hasReturnValue)
+            return action.returnValue === 'void'
           }
         }
       }
     },
     returnValueTag() {
       return function(action) {
-        if (action.hasReturnValue === 1) {
-          if (action.returnValueDesc) {
-            return '[' + action.returnValueDesc + ']'
-          } else {
-            return '[有返回值]'
-          }
+        if (action.returnValueDesc) {
+          return '[' + action.returnValue + ': ' + action.returnValueDesc + ']'
         } else {
-          return '[void]'
+          return '[' + action.returnValue + ']'
         }
       }
     },
@@ -245,6 +246,7 @@ export default {
           selectedAction.params.forEach(param => {
             step.paramValues.push({
               paramName: param.name,
+              paramType: param.type,
               paramValue: ''
             })
           })
