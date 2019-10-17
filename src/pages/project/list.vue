@@ -6,14 +6,14 @@
         <el-option v-for="platform in platforms" :key="platform.type" :label="platform.name" :value="platform.type" />
       </el-select>
       <el-button type="primary" class="el-icon-search" @click="onQueryBtnClick" />
-      <el-button @click="$router.push('/project/add')" style="float: right">添加项目</el-button>
+      <el-button style="float: right" @click="$router.push('/project/add')">添加项目</el-button>
     </div>
     <!-- 列表 -->
     <div style="margin-top: 10px">
       <el-table :data="projectList" highlight-current-row border>
         <el-table-column label="平台" align="center">
           <template scope="{ row }">
-            {{ row.platform === 1 ? 'Android' : 'iOS' }}
+            {{ getType(row.platform) }}
           </template>
         </el-table-column>
         <el-table-column label="项目名称" align="center" prop="name" />
@@ -57,6 +57,9 @@ export default {
         {
           type: 2,
           name: 'iOS'
+        }, {
+          type: 3,
+          name: 'Web'
         }
       ],
       projectList: [],
@@ -99,6 +102,17 @@ export default {
         this.projectList = resp.data.data
         this.total = resp.data.total
       })
+    },
+    getType(type) {
+      let name
+      if (type === 1) {
+        name = 'Android'
+      } else if (type === 2) {
+        name = 'IOS'
+      } else if (type === 3) {
+        name = 'Web'
+      }
+      return name
     }
   }
 }

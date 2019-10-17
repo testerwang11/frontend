@@ -25,7 +25,7 @@
         <el-option
           v-for="project in projectList"
           :key="project.id"
-          :label="project.name"
+          :label="getProjectInfo(project)"
           :value="project.id"
         />
       </el-select>
@@ -34,8 +34,8 @@
           <svg-icon icon-class="people" /><span style="font-size: 15px; margin-left: 5px">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <a target="_blank" href="https://github.com/opendx">
-            <el-dropdown-item>Github</el-dropdown-item>
+          <a target="_blank" href="http://192.168.0.187/#/manage/projectManage">
+            <el-dropdown-item>接口平台</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">Log Out</span>
@@ -145,6 +145,18 @@ export default {
         this.$store.dispatch('device/setPlatform', device.platform)
         this.$store.dispatch('device/setShow', true)
       })
+    },
+    getProjectInfo(project) {
+      let name = project.name
+      const platform = project.platform
+      if (platform == 1) {
+        name = name + '_' + 'Android'
+      } else if (platform === 2) {
+        name = name + '_' + 'IOS'
+      } else if (platform === 3) {
+        name = name + '_' + 'Web'
+      }
+      return name
     }
   }
 }

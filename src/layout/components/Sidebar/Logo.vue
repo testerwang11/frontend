@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      title: 'DaXiang',
+      title: 'SiJiBao',
       logo: '/favicon.ico'
     }
   }

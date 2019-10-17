@@ -44,6 +44,10 @@ export default {
         {
           type: 2,
           name: 'iOS'
+        },
+        {
+          type: 3,
+          name: 'Web'
         }
       ],
       project: {

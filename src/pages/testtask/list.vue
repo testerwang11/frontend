@@ -1,17 +1,17 @@
 <template>
   <div class="app-container">
     <div>
-      <el-button @click="fetchTestTaskList" style="margin-bottom: 10px">刷新</el-button>
+      <!--<el-button @click="fetchTestTaskList" style="margin-bottom: 10px">刷新</el-button>-->
       <el-table :data="testTaskList" border>
         <el-table-column label="提交时间" align="center" width="200">
           <template scope="{ row }">
             {{ row.creatorNickName + ' ' + row.commitTime }}
           </template>
         </el-table-column>
-        <el-table-column label="完成时间" prop="finishTime" align="center"></el-table-column>
-        <el-table-column label="测试任务" prop="name" align="center"></el-table-column>
-        <el-table-column label="任务描述" prop="description" align="center"></el-table-column>
-        <el-table-column label="测试计划" prop="testPlanName" align="center"></el-table-column>
+        <el-table-column label="完成时间" prop="finishTime" align="center" />
+        <el-table-column label="测试任务" prop="name" align="center" />
+        <el-table-column label="任务描述" prop="description" align="center" />
+        <el-table-column label="测试计划" prop="testPlanName" align="center" />
         <el-table-column label="用例分发策略" align="center">
           <template scope="scope">
             {{ scope.row.runMode === 1 ? '兼容模式' : '高效模式' }}
@@ -54,7 +54,8 @@
     <el-dialog
       :title="testTaskName"
       :visible.sync="showProgressDialog"
-      width="50%">
+      width="50%"
+    >
       <div v-for="progress in progressData" :key="progress.deviceId">
         {{ progress.deviceId }}
         <el-progress :percentage="progress.finishedTestcasePercent" />
@@ -84,6 +85,9 @@ export default {
       testTaskName: ''
     }
   },
+  created() {
+    this.fetchTestTaskList()
+  },
   methods: {
     goToReportPage(row) {
       this.$router.push('/testTask/report/' + row.id)
@@ -101,9 +105,6 @@ export default {
         this.progressData = response.data
       })
     }
-  },
-  created() {
-    this.fetchTestTaskList()
   }
 }
 </script>

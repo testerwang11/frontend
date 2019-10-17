@@ -11,25 +11,25 @@
           </el-form-item>
           <el-form-item label="BeforeClass">
             <el-select v-model="testPlan.beforeClass" clearable :disabled="true" placeholder="">
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
+              <el-option v-for="action in selectableActions" :key="action.id" :label="action.name" :value="action.id" />
             </el-select>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">所有测试用例执行前执行的操作</span>
           </el-form-item>
           <el-form-item label="BeforeMethod">
             <el-select v-model="testPlan.beforeMethod" clearable :disabled="true" placeholder="">
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
+              <el-option v-for="action in selectableActions" :key="action.id" :label="action.name" :value="action.id" />
             </el-select>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">每条测试用例执行前执行的操作</span>
           </el-form-item>
           <el-form-item label="AfterMethod">
             <el-select v-model="testPlan.afterMethod" clearable :disabled="true" placeholder="">
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
+              <el-option v-for="action in selectableActions" :key="action.id" :label="action.name" :value="action.id" />
             </el-select>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">每条测试用例执行后执行的操作</span>
           </el-form-item>
           <el-form-item label="AfterClass">
             <el-select v-model="testPlan.afterClass" clearable :disabled="true" placeholder="">
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
+              <el-option v-for="action in selectableActions" :key="action.id" :label="action.name" :value="action.id" />
             </el-select>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">所有测试用例执行后执行的操作</span>
           </el-form-item>
@@ -41,14 +41,25 @@
       <el-col :span="12">
         <el-form label-width="120px">
           <el-form-item label="测试任务名" :rules="[{required: true}]">
-            <el-input v-model="commitTestTaskForm.name" style="width: 80%" clearable></el-input>
+            <el-input v-model="commitTestTaskForm.name" style="width: 80%" clearable />
           </el-form-item>
           <el-form-item label="描述">
-            <el-input v-model="commitTestTaskForm.description" style="width: 80%" clearable></el-input>
+            <el-input v-model="commitTestTaskForm.description" style="width: 80%" clearable />
+          </el-form-item>
+          <el-form-item label="时间配置">
+            <el-input
+              v-model="commitTestTaskForm.timeConfig"
+              style="width: 80%"
+              clearable
+              placeholder="second minute hour day month day_of_week(0 0 12 * * ? 每天中午12点触发)"
+            />
+          </el-form-item>
+          <el-form-item label="通知人员">
+            <el-input v-model="commitTestTaskForm.userList" style="width: 80%" clearable />
           </el-form-item>
           <el-form-item label="设备" :rules="[{required: true}]">
             <el-select v-model="commitTestTaskForm.deviceIds" clearable filterable multiple>
-              <el-option v-for="device in onlineDevices" :label="device.id" :value="device.id" :key="device.id">
+              <el-option v-for="device in onlineDevices" :key="device.id" :label="device.id" :value="device.id">
                 <span style="float: left;margin-right: 10px">{{ device.id }}</span>
                 <span style="float: left;margin-right: 10px">{{ device.name }}</span>
                 <span style="float: left">{{ device.systemVersion }}</span>
@@ -60,13 +71,13 @@
             <el-radio v-model="commitTestTaskForm.runMode" label="1">
               兼容模式
               <el-popover placement="top-start" trigger="hover" content="所有设备并行执行同一份用例">
-                <i class="el-icon-question" slot="reference" />
+                <i slot="reference" class="el-icon-question" />
               </el-popover>
             </el-radio>
             <el-radio v-model="commitTestTaskForm.runMode" label="2">
               高效模式
               <el-popover placement="top-start" trigger="hover" content="用例平均分配给所有设备并行执行">
-                <i class="el-icon-question" slot="reference" />
+                <i slot="reference" class="el-icon-question" />
               </el-popover>
             </el-radio>
           </el-form-item>
@@ -95,6 +106,8 @@ export default {
         testPlanId: this.$route.params.testPlanId,
         name: '',
         description: '',
+        timeConfig: '',
+        userList: '',
         runMode: '1',
         deviceIds: []
       },
@@ -102,18 +115,6 @@ export default {
       testPlan: {},
       selectableActions: [],
       testSuitesTreeData: []
-    }
-  },
-  methods: {
-    cancel() {
-      this.$router.back()
-    },
-    commitTestTask() {
-      this.commitTestTaskForm.testPlanName = this.testPlan.name
-      commitTestTask(this.commitTestTaskForm).then(response => {
-        this.$notify.success(response.msg)
-        this.$router.push('/testTask/list')
-      })
     }
   },
   computed: {
@@ -151,6 +152,18 @@ export default {
         })
       })
     })
+  },
+  methods: {
+    cancel() {
+      this.$router.back()
+    },
+    commitTestTask() {
+      this.commitTestTaskForm.testPlanName = this.testPlan.name
+      commitTestTask(this.commitTestTaskForm).then(response => {
+        this.$notify.success(response.msg)
+        this.$router.push('/testTask/list')
+      })
+    }
   }
 }
 </script>
