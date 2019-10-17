@@ -9,17 +9,21 @@
         <img :src="imgInfo.imgUrl" style="width: 400px">
       </el-col>
       <!--中间布局树-->
-      <el-col :span="9" align="center" style="height: 100%;overflow: auto">
+      <el-col v-if="!isWebView" :span="9" align="center" style="height: 100%;overflow: auto">
         <el-tree ref="tree" v-loading="treeLoading" :data="treeData" :props="defaultProps" highlight-current :expand-on-click-node="false" node-key="id" :default-expanded-keys="currentExpandedKey" @node-click="nodeClick" />
       </el-col>
       <!--右侧控件信息-->
-      <el-col :span="7" style="height: 100%;overflow: auto">
+      <el-col v-if="!isWebView" :span="7" style="height: 100%;overflow: auto">
         <ul style="list-style: none;word-break: break-all;padding: 0px">
           <li v-for="(value,key) in nodeDetail" :key="key" style="border-bottom: 1px solid #eee">
             <label style="width: 100px;display: inline-block;">{{ key }}</label>
             <div v-clipboard:copy="value" v-clipboard:success="onCopy" title="click to copy" style="display: inline;color: #8cc5ff;cursor: pointer;">{{ value }}</div>
           </li>
         </ul>
+      </el-col>
+      <!--WebView-->
+      <el-col v-if="isWebView" :span="16" align="center" style="height: 100%;">
+        <iframe :srcdoc="windowHierarchy" width="100%" height="100%"></iframe>
       </el-col>
     </el-row>
   </div>
@@ -37,7 +41,7 @@ export default {
   props: {
     canvasId: String,
     imgInfo: Object,
-    windowHierarchyJson: Object,
+    windowHierarchy: String,
     treeLoading: Boolean
   },
   data() {
@@ -50,8 +54,9 @@ export default {
         children: 'nodes',
         label: 'class'
       },
-      isAndroid: true,
-
+      isAndroid: false,
+      isIos: false,
+      isWebView: false,
       // 右侧节点详细数据
       nodeDetail: {},
       treeData: [],
@@ -71,9 +76,29 @@ export default {
       this.scale = (this.imgInfo.imgWidth) / 400
       console.log('scale', this.scale)
     },
-    windowHierarchyJson() {
-      if (this.windowHierarchyJson == null) {
+    windowHierarchy() {
+      if (!this.windowHierarchy) {
         return
+      }
+      console.log('windowHierarchy', this.windowHierarchy)
+      let windowHierarchyJson
+      try {
+        windowHierarchyJson = JSON.parse(this.windowHierarchy)
+      } catch (e) {
+        // 先粗暴处理，转换不了json就是webview。webview返回的是xml
+        this.isWebView = true
+        this.isAndroid = false
+        this.isIos = false
+        return
+      }
+      if (windowHierarchyJson.hierarchy.platform === 1) {
+        this.isAndroid = true
+        this.isIos = false
+        this.isWebView = false
+      } else if (windowHierarchyJson.hierarchy.platform === 2) {
+        this.isIos = true
+        this.isAndroid = false
+        this.isWebView = false
       }
       // 重新初始化数据，防止点击刷新按钮，数据错乱
       this.nodeDetail = {}
@@ -84,12 +109,8 @@ export default {
       this.nodeIndex = 0
       // 清除上一次的红色区域
       this.canvasCtx.clearRect(0, 0, this.imgInfo.imgWidth, this.imgInfo.imgHeight)
-      console.log('hierarchy', this.windowHierarchyJson.hierarchy)
-      if (this.windowHierarchyJson.hierarchy.platform === 2) {
-        this.isAndroid = false
-      }
       // from macaca Inspector start https://github.com/macacajs/app-inspector/blob/master/lib/android.js
-      const matchedNode = _.findLast(this.windowHierarchyJson.hierarchy, i => {
+      const matchedNode = _.findLast(windowHierarchyJson.hierarchy, i => {
         return (
           i !== null &&
           typeof i === 'object' &&
@@ -111,6 +132,9 @@ export default {
       // 1.重新绘制红色区域
       // 清除上一次的红色区域
       this.canvasCtx.clearRect(0, 0, this.imgInfo.imgWidth, this.imgInfo.imgHeight)
+      if (this.isWebView) {
+        return
+      }
       this.canvasCtx.fillStyle = 'red'
       // 透明度
       this.canvasCtx.globalAlpha = 0.5
@@ -126,7 +150,7 @@ export default {
       this.selectedNode.xpath_lite = getXPathLite(this.treeData[0], this.getNodePath(this.treeData[0], this.selectedNode.id))
       if (this.isAndroid) {
         this.selectedNode.uiautomator = getAndroidUiautomator(this.treeData[0], this.getNodePath(this.treeData[0], this.selectedNode.id))
-      } else {
+      } else if (this.isIos) {
         this.selectedNode.iOSNsPredicateString = getIOSNsPredicateString(this.treeData[0], this.getNodePath(this.treeData[0], this.selectedNode.id))
       }
       // copy对象
@@ -134,7 +158,7 @@ export default {
       // 去除id nodes
       delete nodeDetail.id
       delete nodeDetail.nodes
-      if (!this.isAndroid) {
+      if (this.isIos) {
         // 为了复用一套前端代码，后台在ios dump时添加了一个class属性
         delete nodeDetail.class
       }
