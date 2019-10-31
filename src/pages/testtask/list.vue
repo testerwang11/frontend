@@ -34,7 +34,7 @@
         </el-table-column>
         <el-table-column label="执行状态" align="center">
           <template scope="scope">
-            {{ scope.row.status === 0 ? '未完成' : '已完成' }}
+            {{convertTaskStatus(scope.row.status)}}
             <el-button v-if="scope.row.status === 0" type="text" @click="lookProgress(scope.row)">查看执行进度</el-button>
           </template>
         </el-table-column>
@@ -89,6 +89,19 @@ export default {
     this.fetchTestTaskList()
   },
   methods: {
+    convertTaskStatus(status) {
+      let result;
+      if (status === 1) {
+        result = "已完成"
+      } else if (status === 2) {
+        result = "执行中"
+      } else if (status === 0) {
+        result = "待执行"
+      } else {
+        result = "未知"
+      }
+      return result;
+    },
     goToReportPage(row) {
       this.$router.push('/testTask/report/' + row.id)
     },

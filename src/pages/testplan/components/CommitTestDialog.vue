@@ -46,18 +46,18 @@
           <el-form-item label="描述">
             <el-input v-model="commitTestTaskForm.description" style="width: 80%" clearable />
           </el-form-item>
-          <el-form-item label="时间配置">
+          <!--<el-form-item label="时间配置">
             <el-input
               v-model="commitTestTaskForm.timeConfig"
               style="width: 80%"
               clearable
               placeholder="second minute hour day month day_of_week(0 0 12 * * ? 每天中午12点触发)"
             />
-          </el-form-item>
+          </el-form-item>-->
           <el-form-item label="通知人员">
             <el-input v-model="commitTestTaskForm.userList" style="width: 80%" clearable />
           </el-form-item>
-          <el-form-item label="设备" :rules="[{required: true}]">
+          <el-form-item label="设备" :rules="[{required: true}]" >
             <el-select v-model="commitTestTaskForm.deviceIds" clearable filterable multiple>
               <el-option v-for="device in onlineDevices" :key="device.id" :label="device.id" :value="device.id">
                 <span style="float: left;margin-right: 10px">{{ device.id }}</span>
@@ -65,9 +65,20 @@
                 <span style="float: left">{{ device.systemVersion }}</span>
               </el-option>
             </el-select>
+          <!--</el-form-item>
+
+          <el-form-item label="设备" :rules="[{required: true}]" v-if="platform===3">
+            <el-select v-model="browsers" clearable filterable multiple>
+              <el-option v-for="browser in browsers" :key="browser.label" :label="browser.label"
+                         :value="browser.value">
+                <span style="float: left;margin-right: 10px">{{ browser.label }}</span>
+                <span style="float: left;margin-right: 10px">{{ browser.label }}</span>
+              </el-option>
+            </el-select>-->
+
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">使用中的设备不会立即执行测试任务</span>
           </el-form-item>
-          <el-form-item label="用例分发策略" :rules="[{required: true}]">
+          <el-form-item label="用例分发策略" :rules="[{required: true}]" v-if="platform!=3">
             <el-radio v-model="commitTestTaskForm.runMode" label="1">
               兼容模式
               <el-popover placement="top-start" trigger="hover" content="所有设备并行执行同一份用例">
@@ -114,7 +125,11 @@ export default {
       onlineDevices: [],
       testPlan: {},
       selectableActions: [],
-      testSuitesTreeData: []
+      testSuitesTreeData: [],
+      browsers: [{
+        value: 'chrome',
+        label: 'chrome'
+      }]
     }
   },
   computed: {
@@ -145,6 +160,7 @@ export default {
             if (actions) {
               actions.forEach(action => {
                 action.label = action.name + ' | ' + action.createTime + '(' + action.creatorNickName + ')'
+                //this.platform = action.platform
               })
             }
             this.testSuitesTreeData.push({ label: suiteName, children: actions })

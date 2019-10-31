@@ -182,7 +182,7 @@ export default {
       }
     },
     debugAction() {
-      if (!this.$store.state.device.show) {
+      if (!this.$store.state.device.show && this.$store.state.project.platform !== 3) {
         this.$notify.error('先选择一台设备使用后才能调试')
         return
       }
@@ -190,7 +190,7 @@ export default {
         this.$notify.error('至少勾选一个步骤')
         return
       }
-      if (!this.$store.state.device.appiumSessionId) {
+      if (!this.$store.state.device.appiumSessionId  && this.$store.state.project.platform !== 3) {
         this.$notify.error('appium正在初始化，请稍后')
         return
       }

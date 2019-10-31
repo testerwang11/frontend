@@ -11,7 +11,7 @@
           </el-tag>
           <el-tag @click="$router.push('/action/testcase/update/'+testcase.id)" size="small" type="info">查看用例</el-tag>
         </template>
-        <div style="float: left">
+        <div style="float: left" v-if="testcase.platform != 3">
           <video :src="testcase.videoUrl" width="300px" controls="controls">浏览器不支持video标签</video>
         </div>
         <div style="float: left;margin-left: 5px;max-height: 600px;overflow: auto">

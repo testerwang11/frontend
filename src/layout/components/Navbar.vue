@@ -5,19 +5,20 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
-        <error-log class="errLog-container right-menu-item hover-effect" />
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        <el-tooltip content="Global Size" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
-      </template>
-      <el-select v-model="idleDeviceId" placeholder="选择手机" style="top: -15px" size="mini" @visible-change="selectIdleDevice" @change="selectedIdleDevice">
+      <!--      <template v-if="device!=='mobile'">
+              <search id="header-search" class="right-menu-item" />
+              <error-log class="errLog-container right-menu-item hover-effect" />
+              <screenfull id="screenfull" class="right-menu-item hover-effect" />
+              <el-tooltip content="Global Size" effect="dark" placement="bottom">
+                <size-select id="size-select" class="right-menu-item hover-effect" />
+              </el-tooltip>
+            </template>-->
+      <el-select v-model="idleDeviceId" placeholder="选择手机" style="top: -15px" size="small "
+                 @visible-change="selectIdleDevice" @change="selectedIdleDevice">
         <el-option
           v-for="idleDevice in idleDeviceList"
           :key="idleDevice.id"
-          :label="idleDevice.id + ' ' + idleDevice.name + ' ' + idleDevice.systemVersion"
+          :label="idleDevice.name + '  ' + idleDevice.agentIp"
           :value="idleDevice.id"
         />
       </el-select>
@@ -128,6 +129,7 @@ export default {
         // status: 2 在线闲置
         getDeviceList({ status: 2 }).then(response => {
           this.idleDeviceList = response.data
+          this.$forceUpdate()
         })
       }
     },
@@ -143,7 +145,9 @@ export default {
         this.$store.dispatch('device/setAgentPort', device.agentPort)
         this.$store.dispatch('device/setId', device.id)
         this.$store.dispatch('device/setPlatform', device.platform)
-        this.$store.dispatch('device/setShow', true)
+        if (device.platform != 3) {
+          this.$store.dispatch('device/setShow', true)
+        }
       })
     },
     getProjectInfo(project) {
