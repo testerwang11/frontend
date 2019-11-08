@@ -9,14 +9,7 @@
           </template>
         </el-table-column>
         <el-table-column label="完成时间" prop="finishTime" align="center"></el-table-column>
-        <el-table-column label="测试任务" prop="name" align="center"></el-table-column>
-        <el-table-column label="任务描述" prop="description" align="center"></el-table-column>
         <el-table-column label="测试计划" prop="testPlanName" align="center"></el-table-column>
-        <el-table-column label="用例分发策略" align="center">
-          <template scope="scope">
-            {{ scope.row.runMode === 1 ? '兼容模式' : '高效模式' }}
-          </template>
-        </el-table-column>
         <el-table-column label="通过用例数" align="center">
           <template scope="scope">
             {{ scope.row.status === 0 ? '-' : scope.row.passCaseCount }}
@@ -34,13 +27,12 @@
         </el-table-column>
         <el-table-column label="状态" align="center">
           <template scope="scope">
-            {{convertTaskStatus(scope.row.status)}}
-            <el-button v-if="scope.row.status === 0" type="text" @click="lookProgress(scope.row)">查看执行进度</el-button>
+            {{ scope.row.status === 0 ? '未完成' : '已完成' }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="350" align="center">
           <template scope="{ row }">
-            <el-button type="primary" @click="onDeviceTestTaskBtnClick(row)">设备测试任务</el-button>
+            <el-button type="primary" @click="onDeviceTestTaskBtnClick(row)">查看进度</el-button>
             <!--未完成disable-->
             <el-button type="success" @click="goToReportPage(row)" :disabled="row.status !== 1">查看报告</el-button>
             <!--已完成的不让删-->
@@ -149,6 +141,15 @@ export default {
       drawerTitle: '',
       testTaskIdInDrawer: undefined,
       deviceTestTaskList: []
+    }
+  },
+  computed: {
+    deviceExecutePercent() {
+      return function(row) {
+        const testcaseCount = row.testcases.length
+        const finishedTestcaseCount = row.testcases.filter(testcase => testcase.status).length // 有status == 执行完成
+        return parseInt(finishedTestcaseCount / testcaseCount * 100)
+      }
     }
   },
   created() {

@@ -9,10 +9,9 @@
       </el-button-group>
       <span v-if="!isTestCase"><!-- 不是测试用例，显示分类，显示page select选择page，以及查看page布局信息的el-icon-view -->
         <el-select v-model="saveActionForm.categoryId" clearable filterable style="width: 200px" placeholder="选择分类">
-          <el-option v-for="category in categories" :key="category.id" :label="category.name" :value="category.id"/>
+          <el-option v-for="category in categories" :key="category.id" :label="category.name" :value="category.id" />
         </el-select>
-        <el-select v-model="saveActionForm.pageId" clearable filterable style="width: 200px" placeholder="选择page"
-                   @change="pageSelected">
+        <el-select v-model="saveActionForm.pageId" clearable filterable style="width: 200px" placeholder="选择page" @change="pageSelected">
           <el-option v-for="page in pages" :key="page.id" :label="page.name" :value="page.id" />
         </el-select>
         <el-popover trigger="click" placement="left">
@@ -59,8 +58,8 @@ import ActionLocalVarList from '../components/ActionLocalVarList'
 import GlobalVarList from '../components/GlobalVarList'
 import ActionStepList from '../components/ActionStepList'
 import Sticky from '@/components/Sticky'
-import {getPageList} from '@/api/page'
-import {getCategoryList} from '@/api/category'
+import { getPageList } from '@/api/page'
+import { getCategoryList } from '@/api/category'
 import { getTestSuiteList } from '@/api/testSuite'
 import { addAction, updateAction, getActionList, debugAction } from '@/api/action'
 export default {
@@ -109,41 +108,35 @@ export default {
       },
       windowHierarchy: null,
       treeLoading: false,
-      confirmed: false,
-      change_number: 0,
+      // end-传递给AndroidInspctor组件的数据
+      // 开始时的表单数据，用于校验表单数据是否有变化
+      startSaveActionFormString: ''
     }
   },
-  watch: {
-    saveActionForm: {
-      handler(newVal, oldVal) {
-        this.change_number++
-      },
-      deep: true
-    },
-/*    categories: {
-      handler(newVal) {
-        this.change_number++
+  destroyed() {
+    window.onbeforeunload = null
+  },
+  mounted() {
+    window.onbeforeunload = () => {
+      if (this.saveActionFormChanged()) {
+        // 刷新或关闭窗口 且 数据发生变化，提示用户
+        return '提示'
       }
-    },
-    pages: {
-      handler(newVal) {
-        this.change_number++
-      }
-    }*/
+    }
   },
   async created() {
     if (!this.isTestCase) {
-      const response = await getCategoryList({projectId: this.saveActionForm.projectId, type: 2})
+      const response = await getCategoryList({ projectId: this.saveActionForm.projectId, type: 2 })
       this.categories = response.data
-      const {data} = await getPageList({projectId: this.saveActionForm.projectId})
+      const { data } = await getPageList({ projectId: this.saveActionForm.projectId })
       this.pages = data
     } else {
-      const {data} = await getTestSuiteList({projectId: this.saveActionForm.projectId})
+      const { data } = await getTestSuiteList({ projectId: this.saveActionForm.projectId })
       this.testSuites = data
     }
     if (!this.isAdd) {
       const editActionId = this.$route.params.actionId
-      const {data} = await getActionList({id: editActionId})
+      const { data } = await getActionList({ id: editActionId })
       this.saveActionForm = data[0]
       if (this.saveActionForm.pageId) { // 编辑时，默认绑定了page，需要初始化布局数据，否则点击右上角眼睛看不到数据
         this.initPageWindowHierarchyData(this.saveActionForm.pageId)
@@ -165,6 +158,8 @@ export default {
         this.$refs.importList.javaImports = this.saveActionForm.javaImports
       }
     }
+    // 记录开始时的表单数据
+    this.startSaveActionFormString = JSON.stringify(this.saveActionForm)
   },
   methods: {
     pageSelected(id) {
@@ -182,7 +177,6 @@ export default {
       this.windowHierarchy = currentPage.windowHierarchy
     },
     saveAction() {
-      this.confirmed = true
       this.saveActionForm.params = this.$refs.paramList.params
       this.saveActionForm.localVars = this.$refs.localVarList.localVars
       this.saveActionForm.steps = this.$refs.stepList.steps
@@ -243,11 +237,12 @@ export default {
         this.debugBtnLoading = false
       })
     },
-    beforeunloadHandler() {
-      if (!this.confirmed) {
-        event.preventDefault();
-        event.returnValue = '';
-      }
+    saveActionFormChanged() {
+      this.saveActionForm.params = this.$refs.paramList.params
+      this.saveActionForm.localVars = this.$refs.localVarList.localVars
+      this.saveActionForm.steps = this.$refs.stepList.steps
+      this.saveActionForm.javaImports = this.$refs.importList.javaImports
+      return JSON.stringify(this.saveActionForm) !== this.startSaveActionFormString
     }
   }
 }
