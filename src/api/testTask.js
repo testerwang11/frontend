@@ -8,6 +8,13 @@ export function commitTestTask(data) {
   })
 }
 
+export function deleteTestTask(testTaskId) {
+  return request({
+    method: 'delete',
+    url: '/testTask/' + testTaskId
+  })
+}
+
 export function getTestTaskList(params) {
   return request({
     method: 'post',
@@ -20,12 +27,5 @@ export function getTestTaskSummary(testTaskId) {
   return request({
     method: 'get',
     url: '/testTask/' + testTaskId + '/summary'
-  })
-}
-
-export function getTestTaskProgress(testTaskId) {
-  return request({
-    method: 'get',
-    url: '/testTask/' + testTaskId + '/progress'
   })
 }

@@ -7,8 +7,12 @@
         <el-button type="warning" :loading="debugBtnLoading" @click="debugAction" @keyup.enter.native="debugAction">调试</el-button>
         <el-button type="success" @click="saveAction">保存</el-button>
       </el-button-group>
-      <span v-if="!isTestCase"><!-- 不是测试用例，显示page select选择page，以及查看page布局信息的el-icon-view -->
-        <el-select v-model="saveActionForm.pageId" clearable filterable style="width: 150px" placeholder="绑定page" @change="pageSelected">
+      <span v-if="!isTestCase"><!-- 不是测试用例，显示分类，显示page select选择page，以及查看page布局信息的el-icon-view -->
+        <el-select v-model="saveActionForm.categoryId" clearable filterable style="width: 200px" placeholder="选择分类">
+          <el-option v-for="category in categories" :key="category.id" :label="category.name" :value="category.id"/>
+        </el-select>
+        <el-select v-model="saveActionForm.pageId" clearable filterable style="width: 200px" placeholder="选择page"
+                   @change="pageSelected">
           <el-option v-for="page in pages" :key="page.id" :label="page.name" :value="page.id" />
         </el-select>
         <el-popover trigger="click" placement="left">
@@ -19,7 +23,7 @@
         </el-popover>
       </span>
       <span v-if="isTestCase"><!-- 测试用例，提供测试集选择 -->
-        <el-select v-model="saveActionForm.testSuiteId" clearable filterable style="width: 150px" placeholder="绑定测试集">
+        <el-select v-model="saveActionForm.testSuiteId" clearable filterable style="width: 200px" placeholder="选择测试集">
           <el-option v-for="testSuite in testSuites" :key="testSuite.id" :label="testSuite.name" :value="testSuite.id" />
         </el-select>
       </span>
@@ -55,10 +59,10 @@ import ActionLocalVarList from '../components/ActionLocalVarList'
 import GlobalVarList from '../components/GlobalVarList'
 import ActionStepList from '../components/ActionStepList'
 import Sticky from '@/components/Sticky'
+import {getPageList} from '@/api/page'
+import {getCategoryList} from '@/api/category'
 import { getTestSuiteList } from '@/api/testSuite'
 import { addAction, updateAction, getActionList, debugAction } from '@/api/action'
-import { getCategoryList } from '@/api/category'
-
 export default {
   components: {
     MobileInspector,
@@ -88,12 +92,12 @@ export default {
         javaImports: [],
         platform: this.$store.state.project.platform,
         pageId: undefined,
-        categoryId: undefined,
         projectId: this.$store.state.project.id,
-        testSuiteId: undefined
+        testSuiteId: undefined,
+        categoryId: undefined
       },
+      categories: [],
       pages: [],
-      categorys: [],
       testSuites: [],
       debugBtnLoading: false,
       // start-传递给AndroidInspctor组件的数据
@@ -104,25 +108,45 @@ export default {
         imgUrl: null
       },
       windowHierarchy: null,
-      treeLoading: false
-      // end-传递给AndroidInspctor组件的数据
+      treeLoading: false,
+      confirmed: false,
+      change_number: 0,
     }
+  },
+  watch: {
+    saveActionForm: {
+      handler(newVal, oldVal) {
+        this.change_number++
+      },
+      deep: true
+    },
+/*    categories: {
+      handler(newVal) {
+        this.change_number++
+      }
+    },
+    pages: {
+      handler(newVal) {
+        this.change_number++
+      }
+    }*/
   },
   async created() {
     if (!this.isTestCase) {
-      // const { data } = await getPageList({ projectId: this.saveActionForm.projectId })
-      const { data } = await getCategoryList({ projectId: this.saveActionForm.projectId, type: 1 })
+      const response = await getCategoryList({projectId: this.saveActionForm.projectId, type: 2})
+      this.categories = response.data
+      const {data} = await getPageList({projectId: this.saveActionForm.projectId})
       this.pages = data
     } else {
-      const { data } = await getTestSuiteList({ projectId: this.saveActionForm.projectId })
+      const {data} = await getTestSuiteList({projectId: this.saveActionForm.projectId})
       this.testSuites = data
     }
     if (!this.isAdd) {
       const editActionId = this.$route.params.actionId
-      const { data } = await getActionList({ id: editActionId })
+      const {data} = await getActionList({id: editActionId})
       this.saveActionForm = data[0]
       if (this.saveActionForm.pageId) { // 编辑时，默认绑定了page，需要初始化布局数据，否则点击右上角眼睛看不到数据
-        // this.initPageWindowHierarchyData(this.saveActionForm.pageId)
+        this.initPageWindowHierarchyData(this.saveActionForm.pageId)
       }
       this.$refs.paramList.params = this.saveActionForm.params
       this.$refs.localVarList.localVars = this.saveActionForm.localVars
@@ -158,6 +182,7 @@ export default {
       this.windowHierarchy = currentPage.windowHierarchy
     },
     saveAction() {
+      this.confirmed = true
       this.saveActionForm.params = this.$refs.paramList.params
       this.saveActionForm.localVars = this.$refs.localVarList.localVars
       this.saveActionForm.steps = this.$refs.stepList.steps
@@ -190,7 +215,7 @@ export default {
         this.$notify.error('至少勾选一个步骤')
         return
       }
-      if (!this.$store.state.device.appiumSessionId  && this.$store.state.project.platform !== 3) {
+      if (!this.$store.state.device.appiumSessionId && this.$store.state.project.platform !== 3) {
         this.$notify.error('appium正在初始化，请稍后')
         return
       }
@@ -217,6 +242,12 @@ export default {
       }).finally(() => {
         this.debugBtnLoading = false
       })
+    },
+    beforeunloadHandler() {
+      if (!this.confirmed) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
     }
   }
 }
