@@ -13,9 +13,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     next(false);
-    let num = this.$refs.saveAction.change_number
-    console.log(num)
-    if (this.$refs.saveAction.confirmed) {
+    if (this.$refs.saveAction.saveActionFormChanged() || this.$refs.saveAction.saveConfirm) {
       next();
     } else {
       next(false);
@@ -27,7 +25,7 @@ export default {
         next();
       });
     }
-  },
+  }/*,
   created() {
     window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
   },
@@ -36,6 +34,6 @@ export default {
   },
   destroyed() {
     window.removeEventListener('beforeunload', e => this.beforeunloadHandler(e))
-  }
+  }*/
 }
 </script>

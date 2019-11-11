@@ -1,9 +1,11 @@
 <template>
   <div class="app-container">
-    <el-button @click="$router.push('/testplan/add')" style="margin-bottom: 10px">添加测试计划</el-button>
+    <el-button @click="$router.push('/testplan/add')" style="margin-bottom: 10px">添加测试任务</el-button>
     <el-table :data="testPlanList" border fit>
       <el-table-column label="测试计划" align="center" prop="name"></el-table-column>
       <el-table-column label="描述" align="center" prop="description"></el-table-column>
+      <el-table-column label="时间配置" align="center" prop="timeConfig"></el-table-column>
+      <el-table-column label="通知人" align="center" prop="userEmails"></el-table-column>
       <el-table-column label="设备" align="center">
         <template scope="{ row }">
           <div v-for="deviceId in row.deviceIds" :key="deviceId">{{ deviceId }}</div>

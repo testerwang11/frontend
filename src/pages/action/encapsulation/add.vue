@@ -13,11 +13,11 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     next(false);
-    if (this.$refs.saveAction.confirmed) {
+    if (this.$refs.saveAction.saveActionFormChanged() || this.$refs.saveAction.saveConfirm) {
       next();
     } else {
       next(false);
-      this.$confirm('您还未保存Action，确定需要退出吗?', '提示', {
+      this.$confirm('数据有变动，您还未保存Action，确定需要退出吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

@@ -110,7 +110,8 @@ export default {
       treeLoading: false,
       // end-传递给AndroidInspctor组件的数据
       // 开始时的表单数据，用于校验表单数据是否有变化
-      startSaveActionFormString: ''
+      startSaveActionFormString: '',
+      saveConfirm: false
     }
   },
   destroyed() {
@@ -193,6 +194,7 @@ export default {
       }
     },
     onSaveSuccess(response) {
+      this.saveConfirm = true;
       this.$notify.success(response.msg)
       if (this.isTestCase) {
         this.$router.push('/action/testcase/list')
@@ -242,7 +244,7 @@ export default {
       this.saveActionForm.localVars = this.$refs.localVarList.localVars
       this.saveActionForm.steps = this.$refs.stepList.steps
       this.saveActionForm.javaImports = this.$refs.importList.javaImports
-      return JSON.stringify(this.saveActionForm) !== this.startSaveActionFormString
+      return JSON.stringify(this.saveActionForm) === this.startSaveActionFormString
     }
   }
 }

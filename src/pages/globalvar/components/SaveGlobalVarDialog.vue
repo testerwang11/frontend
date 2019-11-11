@@ -4,6 +4,12 @@
       <el-form-item label="变量类型" :rules="[{required: true}]">
         <el-input v-model.trim="globalVar.type" clearable style="width: 300px" :disabled="!isAdd" />
       </el-form-item>
+      <el-form-item label="所属环境" :rules="[{required: true}]">
+        <el-input v-model.trim="globalVar.env" clearable style="width: 300px"/>
+        <el-select v-model="globalVar.env" clearable filterable style="width: 200px" placeholder="选择所属环境">
+          <el-option v-for="env in envList" :key="env.id" :label="env.name" :value="env.id"/>
+        </el-select>
+      </el-form-item>
       <el-form-item label="变量名" :rules="[{required: true}]">
         <el-input v-model.trim="globalVar.name" clearable style="width: 300px" :disabled="!isAdd" />
       </el-form-item>

@@ -47,6 +47,15 @@
       </el-col>
       <el-col :span="12">
         <el-form label-width="120px">
+          <el-form-item label="时间配置" trigger="hover" content="任务时间配置">
+            <el-input v-model="saveTestPlanForm.timeConfig"
+                      placeholder="second minute hour day month day_of_week(0 0 12 * * ? 每天中午12点触发)">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="收件人邮箱" trigger="hover" content="报告接收人">
+            <el-input v-model="saveTestPlanForm.userEmails">
+            </el-input>
+          </el-form-item>
           <el-form-item label="用例分发策略" :rules="[{required: true}]">
             <el-radio v-model="saveTestPlanForm.runMode" :label="1">
               兼容模式
@@ -103,7 +112,9 @@ export default {
         afterMethod: null,
         testSuites: [],
         deviceIds: [],
-        runMode: 1
+        runMode: 1,
+        userEmails: null,
+        timeConfig: null
       },
       selectableActions: [],
       testSuites: [],

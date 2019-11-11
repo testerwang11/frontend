@@ -13,7 +13,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     next(false);
-    if (this.$refs.saveAction.confirmed) {
+    if (this.$refs.saveAction.saveActionFormChanged() || this.$refs.saveAction.saveConfirm) {
       next();
     } else {
       next(false);
@@ -25,16 +25,6 @@ export default {
         next();
       });
     }
-  },
-  /*created() {
-    window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
-  },*/
-  mounted() {
-    window.addEventListener('beforeunload', e => this.$refs.saveAction.beforeunloadHandler(e))
-  },
-  destroyed() {
-    window.removeEventListener('beforeunload', e => this.$refs.saveAction.beforeunloadHandler(e))
   }
-
 }
 </script>

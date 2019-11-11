@@ -6,6 +6,12 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
+/* Router Modules */
+import componentsRouter from './modules/components'
+import chartsRouter from './modules/charts'
+import tableRouter from './modules/table'
+import nestedRouter from './modules/nested'
+
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -64,24 +70,58 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
-  /*  {
-      path: '/',
-      component: Layout,
-      redirect: '/dashboard',
-      children: [
-        {
-          path: 'dashboard',
-          component: () => import('@/pages/dashboard/index'),
-          name: 'Dashboard',
-          meta: { title: '仪表板', icon: 'dashboard', affix: true }
-        }
-      ]
-    },*/
   {
     path: '/',
     component: Layout,
-    redirect: '/device/list',
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/pages/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: '仪表板', icon: 'dashboard', affix: true }
+      }
+    ]
   },
+  // {
+  //   path: '/documentation',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/documentation/index'),
+  //       name: 'Documentation',
+  //       meta: { title: 'Documentation', icon: 'documentation', affix: true }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/guide',
+  //   component: Layout,
+  //   redirect: '/guide/index',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/guide/index'),
+  //       name: 'Guide',
+  //       meta: { title: 'Guide', icon: 'guide', noCache: true }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: '/profile/index',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: 'Profile', icon: 'user', noCache: true }
+  //     }
+  //   ]
+  // },
   {
     path: '/agent',
     component: Layout,
@@ -252,7 +292,7 @@ export const constantRoutes = [
         path: 'addActionCategory',
         component: () => import('@/pages/category/addActionCategory'),
         name: 'AddActionCategory',
-        meta: {title: '添加Action分类', noCache: true},
+        meta: { title: '添加Action分类', noCache: true },
         hidden: true
       }
     ]
@@ -331,21 +371,21 @@ export const constantRoutes = [
         path: 'add',
         component: () => import('@/pages/testplan/add'),
         name: 'TestPlanAdd',
-        meta: { title: '添加测试计划', noCache: true },
+        meta: { title: '添加测试任务', noCache: true },
         hidden: true
       },
       {
         path: 'update/:testPlanId',
         component: () => import('@/pages/testplan/update'),
         name: 'TestPlanUpdate',
-        meta: { title: '更新测试计划', noCache: true },
+        meta: { title: '更新测试任务', noCache: true },
         hidden: true
       },
       {
         path: 'list',
         component: () => import('@/pages/testplan/list'),
         name: 'TestPlanList',
-        meta: { title: '测试集合', icon: 'testplan', noCache: true }
+        meta: { title: '测试任务', icon: 'testplan', noCache: true }
       }
     ]
   },
@@ -357,43 +397,14 @@ export const constantRoutes = [
         path: 'list',
         component: () => import('@/pages/testtask/list'),
         name: 'ListTestTask',
-        meta: { title: '测试任务', icon: 'testtask', noCache: true }
+        meta: { title: '测试报告', icon: 'testtask', noCache: true }
       },
       {
         path: 'report/:testTaskId',
         component: () => import('@/pages/testtask/report/index'),
         name: 'ReportTestTask',
-        meta: { title: '测试报告', noCache: true },
+        meta: { title: '测试报告详情', noCache: true },
         hidden: true
-      }
-    ]
-  },
-  {
-    path: '/testReport',
-    component: Layout,
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/pages/testreport/list'),
-        name: 'ListTestTask',
-        meta: {title: '测试报告', icon: 'chart', noCache: true}
-      },
-      {
-        path: 'report/:testTaskId',
-        component: () => import('@/pages/testreport/report/index'),
-        name: 'ReportTestTask',
-        meta: {title: '测试报告详情', noCache: true},
-        hidden: true
-      }
-    ]
-  },
-  {
-    path: "external-link",
-    component: Layout,
-    children: [
-      {
-        "path": "http://192.168.0.187/#/manage/sceneManage",
-        "meta": {"title": "接口测试", "icon": "link"}
       }
     ]
   }
