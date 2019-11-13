@@ -47,15 +47,7 @@
       </el-col>
       <el-col :span="12">
         <el-form label-width="120px">
-          <el-form-item label="时间配置" trigger="hover" content="任务时间配置">
-            <el-input v-model="saveTestPlanForm.timeConfig"
-                      placeholder="second minute hour day month day_of_week(0 0 12 * * ? 每天中午12点触发)">
-            </el-input>
-          </el-form-item>
-          <el-form-item label="收件人邮箱" trigger="hover" content="报告接收人">
-            <el-input v-model="saveTestPlanForm.userEmails">
-            </el-input>
-          </el-form-item>
+
           <el-form-item label="用例分发策略" :rules="[{required: true}]">
             <el-radio v-model="saveTestPlanForm.runMode" :label="1">
               兼容模式
@@ -79,6 +71,21 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="定时任务">
+            <el-switch v-model="saveTestPlanForm.enableSchedule" :active-value="1" :inactive-value="0"/>
+          </el-form-item>
+          <el-form-item label="cron表达式">
+            <el-input v-model="saveTestPlanForm.cronExpression" clearable/>
+          </el-form-item>
+          <el-form-item label="收件人邮箱" trigger="hover" content="报告接收人">
+            <el-input v-model="saveTestPlanForm.userEmails">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="运行环境" :rules="[{required: true}]">
+            <el-select v-model="saveTestPlanForm.envId" clearable filterable>
+              <el-option v-for="env in envList" :label="env.name" :value="env.id" :key="env.id"/>
+            </el-select>
+          </el-form-item>
         </el-form>
       </el-col>
     </el-row>
@@ -93,6 +100,7 @@ import { getSelectableActions } from '@/api/action'
 import { getTestSuiteList } from '@/api/testSuite'
 import { addTestPlan, updateTestPlan, getTestPlanList } from '@/api/testPlan'
 import { getOnlineDevices } from '@/api/device'
+import {queryEnvList} from '@/api/globalvar'
 
 export default {
   props: {
@@ -114,11 +122,16 @@ export default {
         deviceIds: [],
         runMode: 1,
         userEmails: null,
-        timeConfig: null
+        timeConfig: null,
+        runMode: 1,
+        cronExpression: undefined,
+        enableSchedule: 0,
+        envId: 3
       },
       selectableActions: [],
       testSuites: [],
-      onlineDevices: []
+      onlineDevices: [],
+      envList: []
     }
   },
   computed: {
@@ -155,7 +168,11 @@ export default {
       getTestSuiteList({ projectId: this.projectId }).then(response => {
         this.testSuites = response.data
       })
-    }
+    },
+    async fetchEnvList() {
+      const {data} = await queryEnvList()
+      this.envList = this.envList.concat(data)
+    },
   },
   created() {
     getOnlineDevices(this.platform).then(response => {
@@ -163,6 +180,8 @@ export default {
     })
     this.fetchSelectableActions()
     this.fetchTestSuiteList()
+    this.fetchEnvList()
+
     if (!this.isAdd) {
       const testPlanId = this.$route.params.testPlanId
       getTestPlanList({ id: testPlanId }).then(response => {

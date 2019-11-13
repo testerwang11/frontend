@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-table :data="globalVarList" border height="250">
+      <el-table-column align="center" property="envId" label="环境"/>
       <el-table-column align="center" property="type" label="全局变量类型" />
       <el-table-column align="center" property="name" label="全局变量名" />
       <el-table-column align="center" property="value" label="全局变量值" />
@@ -20,11 +21,15 @@ export default {
   computed: {
     projectId() {
       return this.$store.state.project.id
+    },
+    envId() {
+      return this.$store.state.project.envId
     }
   },
   created() {
     getGlobalVarList({
-      projectId: this.projectId
+      projectId: this.projectId,
+      envId: this.envId
     }).then(response => {
       this.globalVarList = response.data
     })

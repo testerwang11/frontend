@@ -30,6 +30,15 @@
           :value="project.id"
         />
       </el-select>
+      <el-select v-model="envId" placeholder="选择执行环境" style="top: -15px" size="mini" @visible-change="selectEnv"
+                 @change="selectedEnv">
+        <el-option
+          v-for="env in envList"
+          :key="env.id"
+          :label="env.name"
+          :value="env.id"
+        />
+      </el-select>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div>
           <svg-icon icon-class="people" /><span style="font-size: 15px; margin-left: 5px">{{ name }}</span>
@@ -57,6 +66,8 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import { getProjectList } from '@/api/project'
 import { getDeviceList, deviceStart } from '@/api/device'
+import {queryEnvList} from '@/api/globalvar'
+
 
 export default {
   components: {
@@ -80,7 +91,9 @@ export default {
       projectList: [],
       projectId: null,
       idleDeviceList: [],
-      idleDeviceId: null
+      idleDeviceId: null,
+      envList: [],
+      envId: 3
     }
   },
   created() {
@@ -101,7 +114,8 @@ export default {
           }
         })
       }
-    })
+    }),
+      this.fetchEnvList()
   },
   methods: {
     toggleSideBar() {
@@ -119,10 +133,20 @@ export default {
         })
       }
     },
+    selectEnv() {
+      queryEnvList().then(resp => {
+        this.envList = resp.data
+      })
+    },
     selectedProject(projectId) {
       const selectedProject = this.projectList.filter(project => project.id === projectId)[0]
       this.$store.dispatch('project/setId', selectedProject.id)
       this.$store.dispatch('project/setPlatform', selectedProject.platform)
+    },
+    selectedEnv(envId) {
+      const selectedEnv = this.envList.filter(env => env.id === envId)[0]
+      console.log(selectedEnv.id)
+      this.$store.dispatch('project/setEnvId', selectedEnv.id)
     },
     selectIdleDevice(type) {
       if (type) {
@@ -161,7 +185,11 @@ export default {
         name = name + '_' + 'Web'
       }
       return name
-    }
+    },
+    async fetchEnvList() {
+      const {data} = await queryEnvList()
+      this.envList = this.envList.concat(data)
+    },
   }
 }
 </script>

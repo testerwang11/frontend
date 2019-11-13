@@ -203,6 +203,11 @@ export default {
       }
     },
     debugAction() {
+      if(!this.$store.state.project.envId){
+        this.$notify.error('请先选择环境！')
+        return;
+      }
+
       if (!this.$store.state.device.show && this.$store.state.project.platform !== 3) {
         this.$notify.error('先选择一台设备使用后才能调试')
         return
@@ -232,7 +237,8 @@ export default {
           agentIp: this.$store.state.device.agentIp,
           agentPort: this.$store.state.device.agentPort,
           deviceId: this.$store.state.device.id
-        }
+        },
+        envId: this.$store.state.project.envId
       }).then(response => {
         this.$message.success(response.msg)
       }).finally(() => {

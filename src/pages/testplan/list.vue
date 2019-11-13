@@ -4,23 +4,34 @@
     <el-table :data="testPlanList" border fit>
       <el-table-column label="测试计划" align="center" prop="name"></el-table-column>
       <el-table-column label="描述" align="center" prop="description"></el-table-column>
-      <el-table-column label="时间配置" align="center" prop="timeConfig"></el-table-column>
       <el-table-column label="通知人" align="center" prop="userEmails"></el-table-column>
       <el-table-column label="设备" align="center">
         <template scope="{ row }">
           <div v-for="deviceId in row.deviceIds" :key="deviceId">{{ deviceId }}</div>
         </template>
       </el-table-column>
+      <el-table-column label="任务状态" align="center" prop="description">
+        <template scope="{ row }">
+          {{ row.enableSchedule === 1 ? '开启' : '关闭' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="cron表达式" align="center" prop="cronExpression"></el-table-column>
       <el-table-column label="创建时间" align="center">
         <template scope="{ row }">
           {{ row.creatorNickName + ' ' + row.createTime }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="300">
+      <el-table-column label="操作" align="center" width="400">
         <template scope="{ row }">
-          <el-button type="success" @click="commitTestPlan(row.id)">提交测试</el-button>
-          <el-button type="primary" class="el-icon-edit" @click="updateTestPlan(row.id)" />
-          <el-button type="danger" class="el-icon-delete" @click="deleteTestPlan(row.id)" />
+          <el-button type="primary" size="mini" v-if="row.enableSchedule === 0"
+                     @click.native="start(row.id)">启动
+          </el-button>
+          <el-button type="primary" size="mini" v-if="row.enableSchedule === 1"
+                     @click.native="stop(row.id)">停止
+          </el-button>
+          <el-button type="success" @click="commitTestPlan(row.id)" size="mini">单次运行</el-button>
+          <el-button type="primary"@click="updateTestPlan(row.id)" size="mini">编辑</el-button>
+          <el-button type="danger" @click="deleteTestPlan(row.id)" size="mini">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -33,7 +44,7 @@
 
 <script>
 
-import { deleteTestPlan, getTestPlanList } from '@/api/testPlan'
+  import {deleteTestPlan, getTestPlanList, startJob, stopJob} from '@/api/testPlan'
 import { commitTestTask } from '@/api/testTask'
 import Pagination from '@/components/Pagination'
 export default {
@@ -77,6 +88,18 @@ export default {
       commitTestTask({ testPlanId: id }).then(response => {
         this.$notify.success(response.msg)
         this.$router.push('/testTask/list')
+      })
+    },
+    start(id) {
+      startJob(id).then(response => {
+        this.$notify.success(response.msg)
+        location.reload()
+      })
+    },
+    stop(id) {
+      stopJob(id).then(response => {
+        this.$notify.success(response.msg)
+        location.reload()
       })
     }
   },

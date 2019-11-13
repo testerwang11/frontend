@@ -30,3 +30,17 @@ export function deleteGlobalVar(globalVarId) {
     url: '/globalVar/' + globalVarId
   })
 }
+
+export function queryEnvList() {
+  return request({
+    method: 'get',
+    url: '/env/list'
+  })
+}
+
+export function getNameById(id) {
+  return request({
+    method: 'get',
+    url: '/env/getNameById?envId='+id
+  })
+}

@@ -30,3 +30,18 @@ export function getTestPlanList(params) {
     params
   })
 }
+
+export function startJob(params) {
+  return request({
+    method: 'get',
+    url: '/testPlan/startJob?testPlanId=' + params,
+  })
+}
+
+export function stopJob(params) {
+  return request({
+    method: 'get',
+    url: '/testPlan/stopJob?testPlanId=' + params,
+    params
+  })
+}
