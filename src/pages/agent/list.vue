@@ -11,18 +11,18 @@
       <el-table-column label="appium版本" property="appiumVersion" align="center" />
       <el-table-column label="java版本" property="javaVersion" align="center" />
       <el-table-column label="host" align="center">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           {{ row.ip + ':' + row.port }}
         </template>
       </el-table-column>
       <el-table-column label="设备" align="center">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           <el-table :data="row.devices" size="mini" border>
             <el-table-column label="设备id" prop="id" align="center" />
             <el-table-column label="设备名" prop="name" align="center" />
             <el-table-column label="系统" prop="systemVersion" align="center" />
             <el-table-column label="设备状态" align="center">
-              <template scope="device_scope">
+              <template slot-scope="device_scope">
                 {{ device_scope.row.status === 2 ? '在线闲置': '[' + device_scope.row.username + ']使用中' }}
               </template>
             </el-table-column>

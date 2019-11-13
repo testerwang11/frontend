@@ -6,7 +6,7 @@
       </span>
       <el-table :data="testTaskSummary" border>
         <el-table-column label="项目类型" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <svg-icon v-if="row.platform === 1" icon-class="android" />
             <svg-icon v-else-if="row.platform === 2" icon-class="ios" />
             <svg-icon v-else icon-class="web"/>

@@ -4,7 +4,7 @@
       <!--<el-button @click="fetchTestTaskList" style="margin-bottom: 10px">刷新</el-button>-->
       <el-table :data="testTaskList" border>
         <el-table-column label="提交时间" align="center" width="200">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.creatorNickName + ' ' + row.commitTime }}
           </template>
         </el-table-column>
@@ -13,33 +13,33 @@
         <el-table-column label="任务描述" prop="description" align="center" />
         <el-table-column label="测试计划" prop="testPlanName" align="center" />
         <el-table-column label="用例分发策略" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.runMode === 1 ? '兼容模式' : '高效模式' }}
           </template>
         </el-table-column>
         <el-table-column label="通过用例数" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '-' : scope.row.passCaseCount }}
           </template>
         </el-table-column>
         <el-table-column label="失败用例数" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '-' : scope.row.failCaseCount }}
           </template>
         </el-table-column>
         <el-table-column label="跳过用例数" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '-' : scope.row.skipCaseCount }}
           </template>
         </el-table-column>
         <el-table-column label="执行状态" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '未完成' : '已完成' }}
             <el-button v-if="scope.row.status === 0" type="text" @click="lookProgress(scope.row)">查看执行进度</el-button>
           </template>
         </el-table-column>
         <el-table-column label="测试报告" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             <!--测试完成才显示-->
             <div v-if="scope.row.status === 1"><el-button type="text" @click="goToReportPage(scope.row)">查看</el-button></div>
           </template>

@@ -22,7 +22,7 @@
     <div>
       <el-table :data="actionList" highlight-current-row border>
         <!--<el-table-column label="分类" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-select v-model="row.categoryId" clearable filterable @change="categoryChange(row)" placeholder="选择分类">
               <el-option v-for="category in actionCategoryListWithoutTotal" :key="category.id" :label="category.name" :value="category.id" />
             </el-select>
@@ -31,24 +31,24 @@
         <el-table-column label="Action名" align="center" prop="name" />
         <el-table-column label="描述" align="center" prop="description" />
         <!--<el-table-column label="Page" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-select v-model="row.pageId" clearable filterable @change="pageChange(row)" placeholder="选择Page">
               <el-option v-for="page in pageList" :key="page.id" :label="page.name" :value="page.id" />
             </el-select>
           </template>
         </el-table-column>-->
         <el-table-column label="创建时间" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.creatorNickName + ' ' + row.createTime }}
           </template>
         </el-table-column>
         <el-table-column label="更新时间" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ (row.updatorNickName ? row.updatorNickName : '') + ' ' + (row.updateTime ? row.updateTime : '') }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="250" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-button type="success" @click="copyAction(row)">复制</el-button>
             <el-button type="primary" class="el-icon-edit" @click="updateAction(row.id)" />
             <el-button type="danger" class="el-icon-delete" @click="deleteAction(row.id)" />

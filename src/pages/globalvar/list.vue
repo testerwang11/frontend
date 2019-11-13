@@ -11,7 +11,7 @@
     <div>
       <el-table :data="globalVarList" highlight-current-row border>
         <el-table-column label="所属环境" align="center" prop="envId">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{row.envId|id2Name}}
           </template>
         </el-table-column>
@@ -20,12 +20,12 @@
         <el-table-column label="变量值" align="center" prop="value" />
         <el-table-column label="描述" align="center" prop="description" />
         <el-table-column label="创建时间" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.creatorNickName + ' ' + row.createTime }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-button type="primary" class="el-icon-edit" @click="updateGlobalVar(row)" />
             <el-button type="danger" class="el-icon-delete" @click="deleteGlobalVar(row)" />
           </template>

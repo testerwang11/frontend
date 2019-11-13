@@ -7,16 +7,16 @@
     <div style="margin-top: 10px">
       <el-table :data="driverList" highlight-current-row border>
         <el-table-column label="类型" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.type === 1 ? 'chromedriver' : 'todo' }}
           </template>
         </el-table-column>
         <el-table-column label="version" align="center" prop="version" />
         <el-table-column label="urls" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-table :data="row.urls" border>
               <el-table-column label="平台" align="center">
-                <template scope="{ row }">
+                <template slot-scope="{ row }">
                   {{ row.platform === 1 ? 'windows' : row.platform === 2 ? 'linux' : 'mac' }}
                 </template>
               </el-table-column>
@@ -25,17 +25,17 @@
           </template>
         </el-table-column>
         <el-table-column label="devices" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <div v-for="deviceId in row.deviceIds" :key="deviceId">{{ deviceId }}</div>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.creatorNickName + ' ' + row.createTime }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-button type="primary" class="el-icon-edit" @click="updateDriver(row)" />
             <el-button type="danger" class="el-icon-delete" @click="deleteDriver(row)" />
           </template>

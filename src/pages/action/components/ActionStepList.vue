@@ -8,7 +8,7 @@
           <el-button type="text" class="el-icon-circle-plus" @click="addStep" />
           <span class="required">步骤</span>
         </template>
-        <template scope="scope">
+        <template slot-scope="scope">
           {{ stepNumber(scope.row, scope.$index + 1) }}
         </template>
       </el-table-column>
@@ -17,7 +17,7 @@
           <span>Action</span>
           <el-button type="text" @click="showActionDetail = true">detail</el-button>
         </template>
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           <el-input v-model="row.name" placeholder="步骤名" style="margin-bottom: 5px" type="textarea" :autosize="{ minRows: 1 }" />
           <el-select v-model="row.actionId" filterable clearable style="width: 100%" @change="actionSelected($event, row)" @visible-change="selectAction" placeholder="选择action">
             <el-option v-for="action in selectableActions" :key="action.id" :value="action.id" :label="action.name">
@@ -32,15 +32,15 @@
         </template>
       </el-table-column>
       <el-table-column label="Action参数" align="center">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           <el-table :data="row.paramValues" border>
             <el-table-column label="参数名" align="center" width="150" show-overflow-tooltip>
-              <template scope="scope_paramValues">
+              <template slot-scope="scope_paramValues">
                 <el-popover placement="top-start" trigger="click">
                   {{ paramNameDesc(row.actionId, scope_paramValues.row.paramName) }}
                   <el-table v-if="hasPossibleValue(row.actionId, scope_paramValues.row.paramName)" :data="possibleValues(row.actionId, scope_paramValues.row.paramName)" border style="margin-top: 5px;width: 500px">
                     <el-table-column align="center" label="可选值">
-                      <template scope="scope_possibleValues">
+                      <template slot-scope="scope_possibleValues">
                         <el-button type="text" @click="clickPossibleValue(row, scope_paramValues.row.paramName, scope_possibleValues.row.value)">{{ scope_possibleValues.row.value }}</el-button>
                       </template>
                     </el-table-column>
@@ -51,12 +51,12 @@
               </template>
             </el-table-column>
             <el-table-column label="参数类型" align="center" width="100" show-overflow-tooltip>
-              <template scope="scope_paramValues">
+              <template slot-scope="scope_paramValues">
                 {{ scope_paramValues.row.paramType }}
               </template>
             </el-table-column>
             <el-table-column label="参数值" align="center">
-              <template scope="scope_paramValues">
+              <template slot-scope="scope_paramValues">
                 <el-input v-model="scope_paramValues.row.paramValue" @paste.native="onpaste($event, scope_paramValues)" type="textarea" :autosize="{ minRows: 1, maxRows: 10 }"/>
                 <img v-if="isImg(scope_paramValues.row.paramValue)" :src="scope_paramValues.row.paramValue" />
               </template>
@@ -65,12 +65,12 @@
         </template>
       </el-table-column>
       <el-table-column label="赋值" align="center" width="200">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           <el-input v-model="row.evaluation" :disabled="evaluationDisabled(row.actionId)" type="textarea" :autosize="{ minRows: 1 }" />
         </template>
       </el-table-column>
       <el-table-column label="异常处理" align="center" width="170">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           <el-select v-model="row.handleException">
             <el-option label="中断执行" :value="null" />
             <el-option label="忽略，继续执行" :value="0" />
@@ -79,7 +79,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="180">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <el-button size="mini" @click="addNextStep(scope.$index)">+</el-button>
             <el-button size="mini" :disabled="moveUpDisable(scope.$index)" @click="moveUp(scope.$index)">↑</el-button>
@@ -104,12 +104,12 @@
               size="mini"
               placeholder="输入关键字搜索"/>
           </template>
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.id }}
           </template>
         </el-table-column>
         <el-table-column align="center" label="类型" width="100">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.type === 1 ? '基础组件' : scope.row.type === 2 ? '封装组件' : '测试用例' }}
           </template>
         </el-table-column>
@@ -117,14 +117,14 @@
         <el-table-column align="center" property="description" label="描述" />
         <el-table-column align="center" property="invoke" label="java代码调用" />
         <el-table-column align="center" label="传参" width="600">
-          <template scope="scope">
+          <template slot-scope="scope">
             <el-table :data="scope.row.params" border>
               <el-table-column align="center" property="name" label="参数名" />
               <el-table-column align="center" property="type" label="类型" />
               <el-table-column align="center" property="description" label="描述" />
               &lt;!&ndash; 先注释吊可能的值，不然table太卡 &ndash;&gt;
               &lt;!&ndash;<el-table-column align="center" label="可能的值">&ndash;&gt;
-                &lt;!&ndash;<template scope="scope2">&ndash;&gt;
+                &lt;!&ndash;<template slot-scope="scope2">&ndash;&gt;
                   &lt;!&ndash;<el-table :data="scope2.row.possibleValues" border>&ndash;&gt;
                     &lt;!&ndash;<el-table-column align="center" property="value" label="值" />&ndash;&gt;
                     &lt;!&ndash;<el-table-column align="center" property="description" label="描述" />&ndash;&gt;

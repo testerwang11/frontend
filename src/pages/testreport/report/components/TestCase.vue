@@ -21,12 +21,12 @@
             <el-table-column prop="startTime" label="开始时间" align="center" width="160px" />
             <el-table-column prop="endTime" label="结束时间" align="center" width="160px" />
             <el-table-column label="耗时" align="center" width="100px">
-              <template scope="{ row }">
+              <template slot-scope="{ row }">
                 {{ row.endTime ? parseInt(new Date(row.endTime) - new Date(row.startTime)) / 1000 + 's' : '-' }}
               </template>
             </el-table-column>
             <el-table-column label="状态" align="center" width="90px">
-              <template scope="{ row }">
+              <template slot-scope="{ row }">
                 <el-tag :type="row.endTime ? 'success' : row.startTime ? 'danger' : 'info'" style="width: 65px;">
                   {{ row.endTime ? '完成' : row.startTime ? '失败' : '未执行' }}
                 </el-tag>
@@ -37,13 +37,13 @@
         <div style="float: left;margin-left: 5px" v-if="testcase.failInfo || testcase.failImgUrl">
           <el-table :data="[testcase]" border>
             <el-table-column label="失败信息" align="center" width="280px">
-              <template scope="{ row }">
+              <template slot-scope="{ row }">
                 <span style="color:red" v-if="row.failInfo">{{ row.failInfo }}</span>
                 <span v-else>-</span>
               </template>
             </el-table-column>
             <el-table-column label="失败时截图" align="center" width="320px">
-              <template scope="{ row }">
+              <template slot-scope="{ row }">
                 <img v-if="row.failImgUrl" :src="row.failImgUrl" style="width: 300px" />
                 <span v-else>-</span>
               </template>

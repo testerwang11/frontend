@@ -12,19 +12,19 @@
     <div style="margin-top: 10px">
       <el-table :data="projectList" highlight-current-row border>
         <el-table-column label="平台" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ getType(row.platform) }}
           </template>
         </el-table-column>
         <el-table-column label="项目名称" align="center" prop="name" />
         <el-table-column label="项目描述" align="center" prop="description" />
         <el-table-column label="创建时间" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.creatorNickName + ' ' + row.createTime }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-button type="primary" class="el-icon-edit" @click="updateProject(row)" />
             <el-button type="danger" class="el-icon-delete" @click="deleteProject(row)" />
           </template>

@@ -6,23 +6,23 @@
       <el-table-column label="描述" align="center" prop="description"></el-table-column>
       <el-table-column label="通知人" align="center" prop="userEmails"></el-table-column>
       <el-table-column label="设备" align="center">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           <div v-for="deviceId in row.deviceIds" :key="deviceId">{{ deviceId }}</div>
         </template>
       </el-table-column>
       <el-table-column label="任务状态" align="center" prop="description">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           {{ row.enableSchedule === 1 ? '开启' : '关闭' }}
         </template>
       </el-table-column>
       <el-table-column label="cron表达式" align="center" prop="cronExpression"></el-table-column>
       <el-table-column label="创建时间" align="center">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           {{ row.creatorNickName + ' ' + row.createTime }}
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="400">
-        <template scope="{ row }">
+        <template slot-scope="{ row }">
           <el-button type="primary" size="mini" v-if="row.enableSchedule === 0"
                      @click.native="start(row.id)">启动
           </el-button>

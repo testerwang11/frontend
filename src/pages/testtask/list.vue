@@ -4,34 +4,34 @@
       <el-button @click="fetchTestTaskList" style="margin-bottom: 10px">刷新</el-button>
       <el-table :data="testTaskList" border fit>
         <el-table-column label="提交时间" align="center" width="200">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.creatorNickName + ' ' + row.commitTime }}
           </template>
         </el-table-column>
         <el-table-column label="完成时间" prop="finishTime" align="center"></el-table-column>
         <el-table-column label="测试计划" prop="testPlanName" align="center"></el-table-column>
         <el-table-column label="通过用例数" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '-' : scope.row.passCaseCount }}
           </template>
         </el-table-column>
         <el-table-column label="失败用例数" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '-' : scope.row.failCaseCount }}
           </template>
         </el-table-column>
         <el-table-column label="跳过用例数" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '-' : scope.row.skipCaseCount }}
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center">
-          <template scope="scope">
+          <template slot-scope="scope">
             {{ scope.row.status === 0 ? '未完成' : '已完成' }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="350" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-button type="primary" @click="onDeviceTestTaskBtnClick(row)">查看进度</el-button>
             <!--未完成disable-->
             <el-button type="success" @click="goToReportPage(row)" :disabled="row.status !== 1">查看报告</el-button>
@@ -61,13 +61,13 @@
         <el-button @click="fetchDeviceTestTask(testTaskIdInDrawer)" size="mini" style="margin-bottom: 5px">刷新</el-button>
         <el-table :data="deviceTestTaskList" border max-height="800px">
           <el-table-column label="操作" width="80" align="center">
-            <template scope="{ row }">
+            <template slot-scope="{ row }">
               <!-- status:0 未运行，只有未运行的设备测试任务才能删 -->
               <el-button type="danger" size="mini" class="el-icon-delete" :disabled="row.status !== 0" @click="deleteDeviceTestTask(row)" />
             </template>
           </el-table-column>
           <el-table-column label="执行进度" align="center" width="100">
-            <template scope="{ row }">
+            <template slot-scope="{ row }">
               <div v-if="row.status === 0">
                 <el-tag type="info">待执行</el-tag>
               </div>
@@ -83,11 +83,11 @@
           <el-table-column label="开始时间" align="center" prop="startTime" width="100" />
           <el-table-column label="结束时间" align="center" prop="endTime" width="100" />
           <el-table-column label="测试用例" align="center">
-            <template scope="{ row }">
+            <template slot-scope="{ row }">
               <el-table :data="row.testcases" border max-height="400px">
                 <el-table-column label="用例名" align="center" prop="name" width="150" show-overflow-tooltip />
                 <el-table-column label="执行状态" align="center" width="100">
-                  <template scope="{ row }">
+                  <template slot-scope="{ row }">
                     <div v-if="row.status === 0">
                       <el-tag type="danger">失败</el-tag>
                     </div>
@@ -103,14 +103,14 @@
                   </template>
                 </el-table-column>
                 <el-table-column label="步骤" align="center">
-                  <template scope="{ row }">
+                  <template slot-scope="{ row }">
                     <el-table :data="row.steps" border>
                       <el-table-column label="#" prop="number" align="center" width="50" />
                       <el-table-column label="步骤名" prop="name" align="center" show-overflow-tooltip />
                       <el-table-column label="开始时间" prop="startTime" align="center" />
                       <el-table-column label="结束时间" prop="endTime" align="center" />
                       <el-table-column label="耗时" align="center" width="100">
-                        <template scope="{ row }">
+                        <template slot-scope="{ row }">
                           {{ row.endTime ? parseInt(new Date(row.endTime) - new Date(row.startTime)) / 1000 + '秒' : '-' }}
                         </template>
                       </el-table-column>

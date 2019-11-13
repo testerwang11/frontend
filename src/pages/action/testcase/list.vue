@@ -16,24 +16,24 @@
         <el-table-column label="测试用例" align="center" prop="name" />
         <el-table-column label="描述" align="center" prop="description" />
         <el-table-column label="测试集" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-select v-model="row.testSuiteId" clearable filterable @change="testSuiteChange(row)" placeholder="选择测试集">
               <el-option v-for="testSuite in testSuiteListWithoutTotal" :key="testSuite.id" :label="testSuite.name" :value="testSuite.id" />
             </el-select>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ row.creatorNickName + ' ' + row.createTime }}
           </template>
         </el-table-column>
         <el-table-column label="更新时间" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             {{ (row.updatorNickName ? row.updatorNickName : '') + ' ' + (row.updateTime ? row.updateTime : '') }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="250" align="center">
-          <template scope="{ row }">
+          <template slot-scope="{ row }">
             <el-button type="success" @click="copyAction(row)">复制</el-button>
             <el-button type="primary" class="el-icon-edit" @click="updateAction(row.id)" />
             <el-button type="danger" class="el-icon-delete" @click="deleteAction(row.id)" />
