@@ -5,6 +5,7 @@
         <el-input v-model.trim="globalVar.type" clearable style="width: 300px" :disabled="!isAdd" />
       </el-form-item>
       <el-form-item label="所属环境" :rules="[{required: true}]">
+        <el-input v-model.trim="globalVar.env" clearable style="width: 300px"/>
         <el-select v-model="globalVar.env" clearable filterable style="width: 200px" placeholder="选择所属环境">
           <el-option v-for="env in envList" :key="env.id" :label="env.name" :value="env.id"/>
         </el-select>
@@ -28,7 +29,7 @@
 </template>
 <script>
 
-  import {addGlobalVar, updateGlobalVar, queryEnvList} from '@/api/globalvar'
+import { addGlobalVar, updateGlobalVar } from '@/api/globalvar'
 
 export default {
   props: {
@@ -43,23 +44,13 @@ export default {
         name: '',
         value: '',
         description: '',
-        projectId: this.$store.state.project.id,
-        envId: this.$store.state.envId
-      },
-      envList: null
+        projectId: this.$store.state.project.id
+      }
     }
   },
   created() {
     if (!this.isAdd) {
       this.globalVar = this.$route.params
-    }
-    queryEnvList().then(response => {
-      this.envList = response.data
-    })
-  },
-  computed: {
-    envId() {
-      return this.$store.state.envId
     }
   },
   methods: {
@@ -83,7 +74,7 @@ export default {
           this.goToGlobalVarListPage()
         })
       }
-    },
+    }
   }
 }
 </script>
