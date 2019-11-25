@@ -173,6 +173,32 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/driver',
+    component: Layout,
+    children: [
+      {
+        path: 'add',
+        component: () => import('@/pages/driver/add'),
+        name: 'AddDriver',
+        meta: { title: '添加Driver', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'update',
+        component: () => import('@/pages/driver/update'),
+        name: 'UpdateDriver',
+        meta: { title: '更新Driver', noCache: true },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/pages/driver/list'),
+        name: 'ListDriver',
+        meta: { title: 'Driver', icon: 'chrome', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/project',
     component: Layout,
     children: [
@@ -261,6 +287,13 @@ export const constantRoutes = [
         name: 'AddPageCategory',
         meta: { title: '添加Page分类', noCache: true },
         hidden: true
+      },
+      {
+        path: 'addActionCategory',
+        component: () => import('@/pages/category/addActionCategory'),
+        name: 'AddActionCategory',
+        meta: { title: '添加Action分类', noCache: true },
+        hidden: true
       }
     ]
   },
@@ -346,13 +379,6 @@ export const constantRoutes = [
         component: () => import('@/pages/testplan/update'),
         name: 'TestPlanUpdate',
         meta: { title: '更新测试计划', noCache: true },
-        hidden: true
-      },
-      {
-        path: 'commitTest/:testPlanId',
-        component: () => import('@/pages/testplan/commitTest'),
-        name: 'TestPlanCommitTest',
-        meta: { title: '提交测试', noCache: true },
         hidden: true
       },
       {

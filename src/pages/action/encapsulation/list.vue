@@ -1,17 +1,40 @@
 <template>
   <div class="app-container">
-    <el-button @click="$router.push('/action/encapsulation/add')" style="margin-bottom: 10px">添加Action</el-button>
-    <!--page-->
+    <div style="margin-bottom: 10px">
+      <el-button @click="$router.push('/category/addActionCategory')">添加分类</el-button>
+      <el-button @click="$router.push('/action/encapsulation/add')">添加Action</el-button>
+    </div>
+    <div style="margin-bottom: 10px">
+      <el-select v-model="queryActionListForm.pageId" clearable filterable placeholder="选择Page">
+        <el-option v-for="page in pageList" :key="page.id" :label="page.name" :value="page.id" />
+      </el-select>
+      <el-button type="primary" class="el-icon-search" @click="onQueryBtnClick" />
+    </div>
+    <!--action分类-->
     <div>
-      <el-tabs type="card" @tab-click="onTabClick">
-        <el-tab-pane v-for="page in pageList" :key="page.id" :label="page.name" />
+      <el-tabs type="card" v-model="selectedCategoryName" @tab-remove="deleteActionCategory" @tab-click="onTabClick">
+        <el-tab-pane v-for="category in actionCategoryList" :key="category.id" :label="category.name" :name="category.name" :closable="category.name !== '全部'" />
       </el-tabs>
     </div>
     <!--action列表-->
     <div>
       <el-table :data="actionList" highlight-current-row border>
+        <el-table-column label="分类" align="center">
+          <template scope="{ row }">
+            <el-select v-model="row.categoryId" clearable filterable @change="categoryChange(row)" placeholder="选择分类">
+              <el-option v-for="category in actionCategoryListWithoutTotal" :key="category.id" :label="category.name" :value="category.id" />
+            </el-select>
+          </template>
+        </el-table-column>
         <el-table-column label="Action名" align="center" prop="name" />
         <el-table-column label="描述" align="center" prop="description" />
+        <el-table-column label="Page" align="center">
+          <template scope="{ row }">
+            <el-select v-model="row.pageId" clearable filterable @change="pageChange(row)" placeholder="选择Page">
+              <el-option v-for="page in pageList" :key="page.id" :label="page.name" :value="page.id" />
+            </el-select>
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" align="center">
           <template scope="{ row }">
             {{ row.creatorNickName + ' ' + row.createTime }}
@@ -20,6 +43,13 @@
         <el-table-column label="更新时间" align="center">
           <template scope="{ row }">
             {{ (row.updatorNickName ? row.updatorNickName : '') + ' ' + (row.updateTime ? row.updateTime : '') }}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center" width="120">
+          <template scope="{ row }">
+            <el-select v-model="row.state" @change="stateChange(row)">
+              <el-option v-for="state in stateList" :key="state.state" :label="state.name" :value="state.state" />
+            </el-select>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="250" align="center">
@@ -40,7 +70,8 @@
 
 <script>
 
-import { getActionList, deleteAction } from '@/api/action'
+import { getCategoryList, deleteCategory } from '@/api/category'
+import { getActionList, deleteAction, updateAction } from '@/api/action'
 import { getPageList } from '@/api/page'
 import Pagination from '@/components/Pagination'
 
@@ -50,7 +81,9 @@ export default {
   },
   data() {
     return {
-      pageList: [{
+      selectedCategoryName: '全部',
+      pageList: [],
+      actionCategoryList: [{
         name: '全部',
         id: undefined
       }],
@@ -62,16 +95,32 @@ export default {
         type: 2,
         projectId: this.$store.state.project.id,
         pageId: undefined
-      }
+      },
+      stateList: [
+        {
+          state: 0,
+          name: '禁用'
+        }, {
+          state: 1,
+          name: '草稿'
+        }, {
+          state: 2,
+          name: '发布'
+        }
+      ]
     }
   },
   computed: {
     projectId() {
       return this.$store.state.project.id
+    },
+    actionCategoryListWithoutTotal() {
+      return this.actionCategoryList.filter(category => category.name !== '全部')
     }
   },
   created() {
     this.fetchPageList()
+    this.fetchCategoryList()
     this.fetchActionList()
   },
   methods: {
@@ -89,6 +138,18 @@ export default {
         params: _action
       })
     },
+    onQueryBtnClick() {
+      this.queryActionListForm.pageNum = 1
+      this.fetchActionList()
+    },
+    fetchCategoryList() {
+      getCategoryList({
+        projectId: this.projectId,
+        type: 2 // action
+      }).then(response => {
+        this.actionCategoryList = this.actionCategoryList.concat(response.data)
+      })
+    },
     async fetchActionList() {
       const { data } = await getActionList(this.queryActionListForm)
       this.actionList = data.data
@@ -96,12 +157,30 @@ export default {
     },
     async fetchPageList() {
       const { data } = await getPageList({ projectId: this.projectId })
-      this.pageList = this.pageList.concat(data)
+      this.pageList = data
     },
     onTabClick(tab) {
-      const activedPage = this.pageList.filter(page => page.name === tab.label)[0]
-      this.queryActionListForm.pageId = activedPage.id
+      const activedCategory = this.actionCategoryList.filter(category => category.name === tab.label)[0]
+      this.queryActionListForm.categoryId = activedCategory.id
+      this.queryActionListForm.pageNum = 1
       this.fetchActionList()
+    },
+    deleteActionCategory(name) {
+      this.$confirm('删除' + name + '？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const category = this.actionCategoryList.filter(category => category.name === name)[0]
+        deleteCategory(category.id).then(response => {
+          this.$notify.success(response.msg)
+          // 移除tab，切换到全部，重新请求全部数据
+          this.actionCategoryList.splice(this.actionCategoryList.indexOf(category), 1)
+          this.selectedCategoryName = '全部'
+          this.queryActionListForm.categoryId = undefined
+          this.fetchActionList()
+        })
+      })
     },
     deleteAction(id) {
       this.$confirm('删除该Action？', '提示', {
@@ -117,6 +196,30 @@ export default {
     },
     updateAction(id) {
       this.$router.push('/action/encapsulation/update/' + id)
+    },
+    categoryChange(row) {
+      if (row.categoryId === '') { // 清除分类
+        row.categoryId = null
+      }
+      updateAction(row).then(response => {
+        this.fetchActionList()
+      })
+    },
+    pageChange(row) {
+      if (row.pageId === '') { // 清除Page
+        row.pageId = null
+      }
+      updateAction(row).then(response => {
+        this.fetchActionList()
+      })
+    },
+    stateChange(row) {
+      updateAction(row).then(response => {
+        this.fetchActionList()
+      }).catch(() => {
+        // 修改失败，重刷，否则当前select选择的值是错误的
+        this.fetchActionList()
+      })
     }
   }
 }

@@ -1,10 +1,17 @@
 import request from '@/utils/request'
 
-export function commitTestTask(data) {
+export function commitTestTask(params) {
   return request({
-    method: 'post',
+    method: 'get',
     url: '/testTask/commit',
-    data
+    params
+  })
+}
+
+export function deleteTestTask(testTaskId) {
+  return request({
+    method: 'delete',
+    url: '/testTask/' + testTaskId
   })
 }
 
@@ -20,12 +27,5 @@ export function getTestTaskSummary(testTaskId) {
   return request({
     method: 'get',
     url: '/testTask/' + testTaskId + '/summary'
-  })
-}
-
-export function getTestTaskProgress(testTaskId) {
-  return request({
-    method: 'get',
-    url: '/testTask/' + testTaskId + '/progress'
   })
 }

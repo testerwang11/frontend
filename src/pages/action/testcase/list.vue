@@ -15,6 +15,13 @@
       <el-table :data="actionList" highlight-current-row border>
         <el-table-column label="测试用例" align="center" prop="name" />
         <el-table-column label="描述" align="center" prop="description" />
+        <el-table-column label="测试集" align="center">
+          <template scope="{ row }">
+            <el-select v-model="row.testSuiteId" clearable filterable @change="testSuiteChange(row)" placeholder="选择测试集">
+              <el-option v-for="testSuite in testSuiteListWithoutTotal" :key="testSuite.id" :label="testSuite.name" :value="testSuite.id" />
+            </el-select>
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" align="center">
           <template scope="{ row }">
             {{ row.creatorNickName + ' ' + row.createTime }}
@@ -23,6 +30,13 @@
         <el-table-column label="更新时间" align="center">
           <template scope="{ row }">
             {{ (row.updatorNickName ? row.updatorNickName : '') + ' ' + (row.updateTime ? row.updateTime : '') }}
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center" width="120">
+          <template scope="{ row }">
+            <el-select v-model="row.state" @change="stateChange(row)">
+              <el-option v-for="state in stateList" :key="state.state" :label="state.name" :value="state.state" />
+            </el-select>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="250" align="center">
@@ -43,7 +57,7 @@
 
 <script>
 
-import { getActionList, deleteAction } from '@/api/action'
+import { getActionList, deleteAction, updateAction } from '@/api/action'
 import Pagination from '@/components/Pagination'
 import { getTestSuiteList, deleteTestSuite } from '@/api/testSuite'
 
@@ -66,12 +80,27 @@ export default {
         type: 3,
         projectId: this.$store.state.project.id,
         testSuiteId: undefined
-      }
+      },
+      stateList: [
+        {
+          state: 0,
+          name: '禁用'
+        }, {
+          state: 1,
+          name: '草稿'
+        }, {
+          state: 2,
+          name: '发布'
+        }
+      ]
     }
   },
   computed: {
     projectId() {
       return this.$store.state.project.id
+    },
+    testSuiteListWithoutTotal() {
+      return this.testSuiteList.filter(suite => suite.name !== '全部')
     }
   },
   created() {
@@ -105,6 +134,7 @@ export default {
     onTabClick(tab) {
       const activedTestSuite = this.testSuiteList.filter(testSuite => testSuite.name === tab.label)[0]
       this.queryActionListForm.testSuiteId = activedTestSuite.id
+      this.queryActionListForm.pageNum = 1
       this.fetchActionList()
     },
     deleteTestSuite(name) {
@@ -138,6 +168,22 @@ export default {
     },
     updateAction(id) {
       this.$router.push('/action/testcase/update/' + id)
+    },
+    testSuiteChange(row) {
+      if (row.testSuiteId === '') { // 清除测试集
+        row.testSuiteId = null
+      }
+      updateAction(row).then(response => {
+        this.fetchActionList()
+      })
+    },
+    stateChange(row) {
+      updateAction(row).then(response => {
+        this.fetchActionList()
+      }).catch(() => {
+        // 修改失败，重刷，否则当前select选择的值是错误的
+        this.fetchActionList()
+      })
     }
   }
 }
