@@ -22,6 +22,23 @@
           :value="idleDevice.id"
         />
       </el-select>
+      <template v-if="device!=='mobile'">
+        <search id="header-search" class="right-menu-item" />
+        <error-log class="errLog-container right-menu-item hover-effect" />
+        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <el-tooltip content="Global Size" effect="dark" placement="bottom">
+          <size-select id="size-select" class="right-menu-item hover-effect" />
+        </el-tooltip>
+      </template>
+      <el-select v-model="idleDeviceId" placeholder="选择手机" style="top: -15px" size="mini" @visible-change="selectIdleDevice" @change="selectedIdleDevice">
+        <el-option v-for="device in idleDeviceList" :label="device.id" :value="device.id" :key="device.id">
+          <span>{{ device.id }}</span>
+          <el-divider direction="vertical" />
+          <span>{{ device.name }}</span>
+          <el-divider direction="vertical" />
+          <span>{{ device.systemVersion }}</span>
+        </el-option>
+      </el-select>
       <el-select v-model="projectId" placeholder="选择项目" style="top: -15px" size="mini" @visible-change="selectProject" @change="selectedProject">
         <el-option
           v-for="project in projectList"
@@ -41,7 +58,7 @@
       </el-select>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div>
-          <svg-icon icon-class="people" /><span style="font-size: 15px; margin-left: 5px">{{ name }}</span>
+          <i class="el-icon-user-solid" /><span style="font-size: 15px; margin-left: 5px">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown">
           <a target="_blank" href="http://192.168.0.187/#/manage/projectManage">
