@@ -10,27 +10,67 @@
             <el-input v-model.trim="saveTestPlanForm.description" type="textarea" />
           </el-form-item>
           <el-form-item label="BeforeClass">
-            <el-select v-model="saveTestPlanForm.beforeClass" clearable filterable>
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
-            </el-select>
+            <el-cascader
+              v-model="saveTestPlanForm.beforeClass"
+              :props="{ value: 'id', label: 'name', children: 'children', emitPath: false }"
+              :options="selectableActions"
+              filterable
+              clearable
+              :show-all-levels="false">
+              <template slot-scope="{ node, data }">
+                <span v-if="data.returnValue">{{ returnValue(data) }}</span>
+                <el-divider v-if="data.returnValue" direction="vertical" />
+                <span>{{ data.name }}</span>
+              </template>
+            </el-cascader>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">所有测试用例执行前执行的操作</span>
           </el-form-item>
           <el-form-item label="BeforeMethod">
-            <el-select v-model="saveTestPlanForm.beforeMethod" clearable filterable>
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
-            </el-select>
+            <el-cascader
+              v-model="saveTestPlanForm.beforeMethod"
+              :props="{ value: 'id', label: 'name', children: 'children', emitPath: false }"
+              :options="selectableActions"
+              filterable
+              clearable
+              :show-all-levels="false">
+              <template slot-scope="{ node, data }">
+                <span v-if="data.returnValue">{{ returnValue(data) }}</span>
+                <el-divider v-if="data.returnValue" direction="vertical" />
+                <span>{{ data.name }}</span>
+              </template>
+            </el-cascader>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">每条测试用例执行前执行的操作</span>
           </el-form-item>
           <el-form-item label="AfterMethod">
-            <el-select v-model="saveTestPlanForm.afterMethod" clearable filterable>
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
-            </el-select>
+            <el-cascader
+              v-model="saveTestPlanForm.afterMethod"
+              :props="{ value: 'id', label: 'name', children: 'children', emitPath: false }"
+              :options="selectableActions"
+              filterable
+              clearable
+              :show-all-levels="false">
+              <template slot-scope="{ node, data }">
+                <span v-if="data.returnValue">{{ returnValue(data) }}</span>
+                <el-divider v-if="data.returnValue" direction="vertical" />
+                <span>{{ data.name }}</span>
+              </template>
+            </el-cascader>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">每条测试用例执行后执行的操作</span>
           </el-form-item>
           <el-form-item label="AfterClass">
-            <el-select v-model="saveTestPlanForm.afterClass" clearable filterable>
-              <el-option v-for="action in selectableActions" :label="action.name" :value="action.id" :key="action.id" />
-            </el-select>
+            <el-cascader
+              v-model="saveTestPlanForm.afterClass"
+              :props="{ value: 'id', label: 'name', children: 'children', emitPath: false }"
+              :options="selectableActions"
+              filterable
+              clearable
+              :show-all-levels="false">
+              <template slot-scope="{ node, data }">
+                <span v-if="data.returnValue">{{ returnValue(data) }}</span>
+                <el-divider v-if="data.returnValue" direction="vertical" />
+                <span>{{ data.name }}</span>
+              </template>
+            </el-cascader>
             <span style="margin-left: 10px;font-size: 10px;color: #8c939d">所有测试用例执行后执行的操作</span>
           </el-form-item>
           <el-form-item label="测试集" :rules="[{required: true}]">
@@ -65,9 +105,11 @@
           <el-form-item label="设备" :rules="[{required: true}]">
             <el-select v-model="saveTestPlanForm.deviceIds" clearable filterable multiple style="width: 80%">
               <el-option v-for="device in onlineDevices" :label="device.id" :value="device.id" :key="device.id">
-                <span style="float: left;margin-right: 10px">{{ device.id }}</span>
-                <span style="float: left;margin-right: 10px">{{ device.name }}</span>
-                <span style="float: left">{{ device.systemVersion }}</span>
+                <span>{{ device.id }}</span>
+                <el-divider direction="vertical" />
+                <span>{{ device.name }}</span>
+                <el-divider direction="vertical" />
+                <span>{{ device.systemVersion }}</span>
               </el-option>
             </el-select>
           </el-form-item>
@@ -140,6 +182,15 @@ export default {
     },
     platform() {
       return this.$store.state.project.platform
+    },
+    returnValue() {
+      return function(action) {
+        if (action.returnValueDesc) {
+          return action.returnValue + '(' + action.returnValueDesc + ')'
+        } else {
+          return action.returnValue
+        }
+      }
     }
   },
   methods: {

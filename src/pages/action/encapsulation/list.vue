@@ -47,6 +47,13 @@
             {{ (row.updatorNickName ? row.updatorNickName : '') + ' ' + (row.updateTime ? row.updateTime : '') }}
           </template>
         </el-table-column>
+        <el-table-column label="状态" align="center" width="120">
+          <template scope="{ row }">
+            <el-select v-model="row.state" @change="stateChange(row)">
+              <el-option v-for="state in stateList" :key="state.state" :label="state.name" :value="state.state" />
+            </el-select>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="250" align="center">
           <template slot-scope="{ row }">
             <el-button type="success" @click="copyAction(row)">复制</el-button>
@@ -90,7 +97,19 @@ export default {
         type: 2,
         projectId: this.$store.state.project.id,
         pageId: undefined
-      }
+      },
+      stateList: [
+        {
+          state: 0,
+          name: '禁用'
+        }, {
+          state: 1,
+          name: '草稿'
+        }, {
+          state: 2,
+          name: '发布'
+        }
+      ]
     }
   },
   computed: {
@@ -197,6 +216,14 @@ export default {
         row.pageId = null
       }
       updateAction(row).then(response => {
+        this.fetchActionList()
+      })
+    },
+    stateChange(row) {
+      updateAction(row).then(response => {
+        this.fetchActionList()
+      }).catch(() => {
+        // 修改失败，重刷，否则当前select选择的值是错误的
         this.fetchActionList()
       })
     }
